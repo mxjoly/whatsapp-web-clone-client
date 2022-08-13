@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import { useSocket } from '../../../contexts/SocketContext';
 
 import LeftPanel from '../../templates/LeftPanel';
 import RightPanel from '../../templates/RightPanel';
@@ -8,14 +9,15 @@ import './styles.scss';
 type MainProps = {};
 
 const Main = (props: MainProps): JSX.Element => {
+  const socketClient = useSocket();
+
   const [user, setUser] = React.useState<User>(null);
   const [chats, setChats] = React.useState<Chat[]>([]);
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [chatVisible, setChatVisible] = React.useState<boolean>(false);
   const [chatSelected, setChatSelected] = React.useState<Chat | null>(null);
 
-  // Programmatically login when we drop the login page
-  React.useEffect(() => {
+  function loadData() {
     const userId = localStorage.getItem('userId');
 
     axios({
@@ -67,15 +69,22 @@ const Main = (props: MainProps): JSX.Element => {
           });
 
           Promise.all(promises).then((messages) => {
-            setMessages(messages.reduce(
-              (prev, cur) => prev.concat(cur),
-              []
-            ));
+            setMessages(messages.reduce((prev, cur) => prev.concat(cur), []));
           });
         }
       })
       .catch(() => console.error(`Error trying to load the user chats`));
+  }
+
+  // Programmatically login when we drop the login page
+  React.useEffect(() => {
+    loadData();
   }, []);
+
+  React.useEffect(() => {
+    socketClient.on('change', loadData);
+    return () => socketClient.off('change', loadData);
+  }, [socketClient]);
 
   const handleChatSelection = (chatId: string) => {
     if (chatId) {

@@ -1,15 +1,26 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
-import './App.scss';
+import { useSocket } from './contexts/SocketContext';
 
+import './App.scss';
 import Main from './components/pages/Main';
 import { ThemeContextProvider, ThemeContext } from './contexts/ThemeContext';
 
 type AppProps = {};
 
 const App = (props: AppProps): JSX.Element => {
+  const socketClient = useSocket();
   const [login, setLogin] = React.useState(false);
+
+  React.useEffect(() => {
+    if (socketClient) {
+      socketClient.on('connection', () => {
+        console.log('Connected to the server');
+      });
+      return () => socketClient.disconnect();
+    }
+  }, [socketClient]);
 
   React.useEffect(() => {
     axios({
@@ -41,7 +52,7 @@ const App = (props: AppProps): JSX.Element => {
       .catch(() => console.error(`Failed to load the test user`));
   }, []);
 
-  if (!login) {
+  if (!login || !socketClient) {
     return <div></div>;
   }
 

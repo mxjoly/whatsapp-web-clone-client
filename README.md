@@ -13,4 +13,4 @@ This is a clone of the WhatsApp web application developed in [React](https://rea
 
 ## Demo
 
-In progress...
+https://whatsapp-web-clone-client.netlify.app/
