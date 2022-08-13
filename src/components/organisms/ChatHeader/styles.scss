@@ -1,0 +1,70 @@
+@import '../../../scss/theme';
+
+.chatHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+
+  &__icons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    user-select: none;
+    position: relative;
+  }
+
+  &__icon {
+    cursor: pointer;
+    background: transparent;
+
+    @include themed {
+      color: t('text-color-medium');
+    }
+
+    &--left {
+      font-size: 4rem;
+      width: 4rem;
+      height: 4rem;
+    }
+
+    &--right {
+      font-size: 2.5rem;
+      width: 2.5rem;
+      height: 2.5rem;
+      margin-left: 3rem;
+    }
+
+    &:last-child {
+      margin-right: 2rem;
+    }
+  }
+
+  &__infos {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+
+    &__title {
+      font-size: 1.8rem;
+
+      @include themed {
+        color: t('text-color-dark');
+      }
+    }
+
+    &__subtitle {
+      font-size: 1.2rem;
+
+      @include themed {
+        color: t('text-color-medium');
+      }
+    }
+  }
+}

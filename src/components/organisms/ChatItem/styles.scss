@@ -1,0 +1,151 @@
+@import '../../../scss/theme';
+
+.chatItem {
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  align-items: center;
+  width: 100%;
+  height: min-content;
+  box-sizing: border-box;
+  cursor: pointer;
+  position: relative;
+
+  @include themed {
+    background-color: t('background-chat');
+    &:hover {
+      background-color: t('background-chat-active');
+    }
+  }
+
+  &--active {
+    @include themed {
+      background-color: t('background-chat-active') !important;
+    }
+  }
+
+  &__container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+  }
+
+  &__content {
+    &--left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 8rem;
+      height: 100%;
+      padding: 1.5rem 0;
+      position: relative;
+    }
+
+    &--right {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      width: 100%;
+      height: 100%;
+      max-width: calc(100% - 8rem);
+      padding: 1.5rem 1.5rem 1.5rem 0;
+      border-bottom-width: 0.1px;
+      border-bottom-style: solid;
+      box-sizing: border-box;
+      position: relative;
+
+      @include themed {
+        border-bottom-color: t('border-color');
+      }
+    }
+  }
+
+  &__avatar {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  &__row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    line-height: normal;
+    position: relative;
+    width: 100%;
+
+    &:first-child {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  &__title {
+    font-size: 1.6rem;
+    text-align: left;
+    @include themed {
+      color: t('text-color-dark');
+    }
+  }
+
+  &__date {
+    font-size: 1.2rem;
+    text-align: right;
+    margin-top: 0.3rem;
+    margin-left: 0.6rem;
+    @include themed {
+      color: t('text-color-medium');
+    }
+    &--colored {
+      color: $primary-color !important;
+    }
+  }
+
+  &__message {
+    font-size: 1.4rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    padding-right: 4rem;
+    width: 100%;
+
+    @include themed {
+      color: t('text-color-medium');
+    }
+  }
+
+  &__badge {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 1rem;
+    text-align: right;
+    margin-left: 2rem;
+    background: $primary-color;
+
+    @include themed {
+      color: t('background-chat');
+    }
+  }
+
+  &__chevron {
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    position: absolute;
+    right: 3%;
+    z-index: 10;
+    opacity: 1;
+    transition: right ease 0.1s, opacity ease 0.1s;
+
+    &--hidden {
+      right: 0%;
+      opacity: 0;
+    }
+  }
+}

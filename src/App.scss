@@ -1,0 +1,62 @@
+@import './scss/reset';
+@import './scss/fonts';
+@import './scss/theme';
+
+.app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  min-width: 800px;
+  overflow: hidden;
+
+  &__background {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    right: 0;
+    z-index: 1;
+
+    &--top {
+      top: 0;
+      height: 10vh;
+      width: inherit;
+      @include themed {
+        background: t('background-colored');
+      }
+    }
+    &--bottom {
+      bottom: 0;
+      height: 90vh;
+      width: inherit;
+      @include themed {
+        background: t('background-dark');
+      }
+    }
+  }
+
+  &__container {
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 90%;
+    height: 96%;
+    max-width: 1600px;
+    margin: auto;
+
+    @include themed {
+      background: t('background-medium');
+    }
+  }
+
+  @media screen and (max-width: 1600px) {
+    &__container {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}

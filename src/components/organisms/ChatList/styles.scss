@@ -1,0 +1,29 @@
+@import '../../../scss/theme';
+
+.chatList {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: min-content;
+  position: relative;
+  /* overflow-y: scroll; */
+
+  @include themed {
+    background-color: t('background-chat');
+  }
+
+  &::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 0.2rem;
+    @include themed {
+      background: #374045;
+    }
+  }
+}

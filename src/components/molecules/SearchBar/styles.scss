@@ -1,0 +1,89 @@
+@import '../../../scss/theme';
+
+.searchBar {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  padding: 1rem;
+  box-sizing: border-box;
+  border-radius: 10px;
+
+  @include themed {
+    background-color: t('background-medium');
+  }
+
+  &__input {
+    width: calc(100% - 1.5rem);
+    text-overflow: ellipsis;
+    text-align: left;
+    outline: none;
+    border: none;
+    padding-left: 2rem;
+
+    @include themed {
+      background-color: t('background-medium');
+      caret-color: t('text-color-dark');
+      color: t('text-color-dark');
+    }
+
+    &::placeholder {
+      @include themed {
+        color: t('text-color-light');
+      }
+      opacity: 1;
+      font-size: 1.4rem;
+      font-weight: 200;
+      text-align: left;
+    }
+  }
+
+  &__icon {
+    font-size: 2rem;
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+
+    @include themed {
+      color: t('text-color-medium');
+      background-color: t('background-medium');
+    }
+
+    /* https://reactcommunity.org/react-transition-group/css-transition */
+    &-enter {
+      opacity: 0;
+      transform: rotate(-90deg);
+    }
+    &-enter-active {
+      opacity: 1;
+      transform: rotate(0deg);
+      transition: transform 300ms, opacity 300ms;
+    }
+    &-enter-done {
+      opacity: 1;
+      transform: rotate(0deg);
+      transition: transform 300ms, opacity 300ms;
+    }
+
+    &-exit {
+      opacity: 0;
+      transform: rotate(90deg);
+    }
+    &-exit-active {
+      opacity: 1;
+      transform: rotate(0deg);
+      transition: transform 300ms, opacity 300ms;
+    }
+    &-exit-done {
+      opacity: 1;
+      transform: rotate(0deg);
+      transition: transform 300ms, opacity 300ms;
+    }
+
+    &--colored {
+      color: $primary-color !important;
+    }
+  }
+}

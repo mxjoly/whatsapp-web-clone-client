@@ -1,0 +1,82 @@
+@import '../../../scss/theme';
+
+.iconWithMenu {
+  position: relative;
+  cursor: pointer;
+  font-size: 3rem;
+  width: 3rem;
+  height: 3rem;
+  background: transparent;
+
+  @include themed {
+    color: t('text-color-medium');
+  }
+
+  &--highlight {
+    border-radius: 50%;
+    @include themed {
+      background: t('background-light') !important;
+    }
+  }
+
+  &__menu {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-evenly;
+    position: absolute;
+    list-style: none;
+
+    width: max-content;
+    height: min-content;
+    z-index: 20;
+    padding: 1.5rem 0;
+    user-select: none;
+    box-sizing: content-box;
+    box-shadow: 1px 1px 11px 1px rgba(0, 0, 0, 0.34);
+    transform: scale(1);
+    -webkit-transform: scale(1);
+
+    transition: 0.2s ease transform;
+
+    &--right {
+      left: 0;
+      -webkit-transform-origin: 0% 0%;
+      transform-origin: 0% 0%;
+    }
+
+    &--left {
+      right: 0;
+      -webkit-transform-origin: 100% 0%;
+      transform-origin: 100% 0%;
+    }
+
+    @include themed {
+      background: t('background-light');
+    }
+
+    &--hide {
+      transform: scale(0);
+      -webkit-transform: scale(0);
+      transition: 0.2s ease transform;
+    }
+  }
+
+  &__menuItem {
+    width: 100%;
+    font-size: 1.5rem;
+    line-height: 4rem;
+    padding: 0 1.5rem;
+    box-sizing: border-box;
+
+    @include themed {
+      color: t('text-color-dark');
+    }
+
+    &:hover {
+      @include themed {
+        background: t('background-medium');
+      }
+    }
+  }
+}

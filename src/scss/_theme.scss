@@ -1,0 +1,62 @@
+$primary-color: #00a884;
+$secondary-color: #00ee00;
+$link-color: #53bdeb;
+
+$themes: (
+  'dark': (
+    background-colored: #0a1014,
+    background-dark: #0a1014,
+    background-medium: #222f37,
+    background-light: #2a3942,
+    background-chat: #111b21,
+    background-messages: #0b141a,
+    background-chat-active: #222f37,
+    background-notification: #182229,
+    background-notification-icon: $link-color,
+    text-color-dark: #e8ecee,
+    text-color-medium: #8696a0,
+    text-color-light: #929fa6,
+    border-color: #374045,
+    icon-color: #54656f,
+  ),
+  'light': (
+    background-colored: $primary-color,
+    background-dark: #dfe0dd,
+    background-medium: #f8f9fb,
+    background-light: #ffffff,
+    background-chat: #ffffff,
+    background-messages: #efeae2,
+    background-chat-active: #f8f9fb,
+    background-notification: $link-color,
+    background-notification-icon: #ffffff,
+    text-color-dark: #111b21,
+    text-color-medium: #4b5961,
+    text-color-light: #929fa6,
+    border-color: #e1e9eb,
+    icon-color: #54656f,
+  ),
+);
+
+// https://www.zaratan.fr/next-refactor-theme-scss#refactor-avec-des-fonctions-scss
+@mixin themed() {
+  @each $theme, $map in $themes {
+    .theme--#{$theme} & {
+      $theme-map: () !global;
+      @each $key, $submap in $map {
+        $value: map-get(map-get($themes, $theme), '#{$key}');
+        $theme-map: map-merge(
+          $theme-map,
+          (
+            $key: $value,
+          )
+        ) !global;
+      }
+      @content;
+      $theme-map: null !global;
+    }
+  }
+}
+
+@function t($key) {
+  @return map-get($theme-map, $key);
+}

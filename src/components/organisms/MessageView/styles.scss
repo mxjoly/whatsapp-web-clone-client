@@ -1,0 +1,64 @@
+@import '../../../scss/theme';
+
+.messageView {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 1rem 5rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  height: 100%;
+
+  @include themed {
+    background: t('background-messages');
+  }
+
+  &::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 0.2rem;
+    @include themed {
+      background: #374045;
+    }
+  }
+
+  &__row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: min-content;
+    padding: 1rem;
+    box-sizing: border-box;
+
+    &--right {
+      justify-content: flex-end;
+    }
+
+    &--left {
+      justify-content: flex-start;
+    }
+
+    &--center {
+      justify-content: center;
+    }
+  }
+
+  &__message {
+    &--right {
+      background: $primary-color;
+    }
+
+    &--left {
+      @include themed {
+        background: t('background-medium');
+      }
+    }
+  }
+}

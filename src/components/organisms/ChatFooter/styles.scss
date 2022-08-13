@@ -1,0 +1,58 @@
+@import '../../../scss/theme';
+
+.chatFooter {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+  height: min-content;
+  box-sizing: border-box;
+  padding: 1rem 0;
+
+  & > * {
+    margin-left: 1.5rem;
+    &:last-child {
+      margin-right: 1.5rem;
+    }
+  }
+
+  &__icon {
+    font-size: 2rem;
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+
+    @include themed {
+      color: t('text-color-medium');
+    }
+  }
+
+  &__textarea {
+    flex: 1;
+    font-size: 1.5rem;
+    text-align: left;
+    outline: none;
+    border: none;
+    width: 100%;
+    padding: 1rem;
+    border-radius: 1rem;
+    resize: none;
+
+    @include themed {
+      background-color: t('background-light');
+      caret-color: t('text-color-dark');
+      color: t('text-color-dark');
+    }
+
+    &::placeholder {
+      @include themed {
+        color: t('text-color-light');
+      }
+      opacity: 1;
+      font-size: 1.4rem;
+      font-weight: 200;
+      text-align: left;
+    }
+  }
+}

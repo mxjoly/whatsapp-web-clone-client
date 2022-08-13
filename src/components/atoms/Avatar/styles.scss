@@ -1,0 +1,20 @@
+@import '../../../scss/theme';
+
+.avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+
+  @include themed {
+    background: t('background-dark');
+  }
+
+  &--large {
+    font-size: 6rem;
+    width: 6rem;
+    height: 6rem;
+  }
+}

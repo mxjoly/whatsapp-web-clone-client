@@ -1,0 +1,87 @@
+@import '../../../scss/theme';
+
+.messageBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: max-content;
+  max-width: 75%;
+  min-width: 7rem;
+  height: min-content;
+  user-select: none;
+  border-radius: 1rem;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  padding: 0.5rem;
+
+  &__container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0.3rem;
+    box-sizing: border-box;
+  }
+
+  &__message {
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+    width: 100%;
+    text-align: left;
+    padding-right: 1.5rem;
+    box-sizing: border-box;
+
+    @include themed {
+      color: t('text-color-dark');
+    }
+  }
+
+  &__chevron {
+    width: 2rem;
+    height: 2rem;
+    font-size: 2rem;
+    position: absolute;
+    top: 0;
+    right: 0rem;
+    opacity: 1;
+    transition: opacity ease 0.2s, right ease 0.2s;
+    cursor: pointer;
+
+    @include themed {
+      color: t('text-color-dark');
+    }
+
+    &--hide {
+      opacity: 0;
+      right: -1rem;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    height: 1.5rem;
+  }
+
+  &__date {
+    font-size: 1rem;
+    line-height: 1rem;
+
+    @include themed {
+      color: t('text-color-dark');
+    }
+  }
+
+  &__done {
+    font-size: 1.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: $link-color;
+  }
+}

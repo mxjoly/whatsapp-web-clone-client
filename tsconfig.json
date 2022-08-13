@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2018",
+    "module": "commonjs",
+    "allowJs": true,
+    "jsx": "preserve",
+    "moduleResolution": "node",
+    "types": ["node"],
+    "esModuleInterop": true,
+    "outDir": "build"
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "global.d.ts"],
+  "exclude": ["node_modules/**/*", "build/**/*"]
+}

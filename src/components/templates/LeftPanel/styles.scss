@@ -1,0 +1,44 @@
+@import '../../../scss/theme';
+
+.leftPanel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 300px;
+  position: relative;
+
+  @include themed {
+    border-right: 0.1px solid t('border-color');
+    background: t('background-chat');
+  }
+
+  @-webkit-keyframes slide {
+    from {
+      right: 100%;
+    }
+    to {
+      right: 0;
+    }
+  }
+
+  @keyframes slide {
+    from {
+      right: 100%;
+    }
+    to {
+      right: 0;
+    }
+  }
+
+  &__userInfo {
+    right: 100%;
+    position: absolute;
+    z-index: 20;
+    right: 100%;
+    transition: right 0.4s ease;
+
+    &--active {
+      right: 0;
+    }
+  }
+}
