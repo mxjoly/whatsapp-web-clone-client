@@ -13,7 +13,7 @@ const Login = (props: LoginProps): JSX.Element => {
 
   React.useEffect(() => {
     if (localStorage.getItem('userId') && localStorage.getItem('token')) {
-      navigate('/home');
+      navigate('/');
     }
   }, [navigate]);
 
@@ -34,7 +34,7 @@ const Login = (props: LoginProps): JSX.Element => {
       .then((res) => {
         if (res.status === 200) {
           console.log(`Login successfully`);
-          navigate('/home');
+          navigate('/');
           console.log(res.data);
           localStorage.setItem('userId', res.data.userId);
           localStorage.setItem('token', res.data.token);
