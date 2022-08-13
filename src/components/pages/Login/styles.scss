@@ -1,0 +1,54 @@
+@import '../../../scss/theme';
+
+.login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  margin: auto;
+  text-align: center;
+
+  @include themed {
+    background: t('background-medium');
+  }
+
+  &__container {
+    width: 45rem;
+    margin: auto;
+  }
+
+  &__image {
+    width: 25rem;
+    height: auto;
+    margin-bottom: 2.8rem;
+  }
+
+  &__title {
+    font-size: 3.2rem;
+    margin-bottom: 1.8rem;
+    font-weight: 300;
+    @include themed {
+      color: t('text-color-medium');
+    }
+  }
+
+  &__p {
+    text-align: center;
+    font-size: 1.4rem;
+    line-height: 2rem;
+    @include themed {
+      color: t('text-color-medium');
+    }
+  }
+
+  &__divider {
+    width: 100%;
+    height: 0.1rem;
+    margin: 3.4rem 0;
+    @include themed {
+      background: t('border-color');
+    }
+  }
+}

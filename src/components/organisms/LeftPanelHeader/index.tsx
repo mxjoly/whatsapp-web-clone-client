@@ -33,7 +33,8 @@ const LeftPanelHeader = ({
         return;
       case 3:
         // logout
-        navigate('/');
+        navigate('/login');
+        localStorage.clear();
         console.log('Log out successfully');
         return;
     }

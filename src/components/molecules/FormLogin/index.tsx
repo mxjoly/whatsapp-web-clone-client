@@ -32,21 +32,21 @@ const FormLogin = (props: FormLoginProps): JSX.Element => {
       <input
         className="formLogin__input"
         name="username"
-        placeholder="Nom d'utilisateur"
+        placeholder="Bryan | Avery | Katy | Marco | Samy | John"
         value={state.username}
         onChange={handleChange}
       />
       <input
         className="formLogin__input"
         name="phone"
-        placeholder="Téléphone"
+        placeholder="+111111111"
         value={state.phone}
         onChange={handleChange}
       />
       <input
         className="formLogin__input"
         name="password"
-        placeholder="Mot de passe"
+        placeholder="password"
         value={state.password}
         onChange={handleChange}
       />

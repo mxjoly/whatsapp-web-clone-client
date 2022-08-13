@@ -4,15 +4,23 @@ import axios from 'axios';
 import LeftPanel from '../../templates/LeftPanel';
 import RightPanel from '../../templates/RightPanel';
 import './styles.scss';
+import { useNavigate } from 'react-router-dom';
 
 type MainProps = {};
 
 const Main = (props: MainProps): JSX.Element => {
+  const navigate = useNavigate();
   const [user, setUser] = React.useState<User>(null);
   const [chats, setChats] = React.useState<Chat[]>([]);
   const [messages, setMessages] = React.useState<Message[]>([]);
   const [chatVisible, setChatVisible] = React.useState<boolean>(false);
   const [chatSelected, setChatSelected] = React.useState<Chat | null>(null);
+
+  React.useEffect(() => {
+    if (!localStorage.getItem('userId') || !localStorage.getItem('token')) {
+      navigate('/login');
+    }
+  }, [navigate]);
 
   function loadData() {
     const userId = localStorage.getItem('userId');

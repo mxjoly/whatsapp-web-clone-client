@@ -1,50 +1,14 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import axios from 'axios';
 
 import './App.scss';
+import Login from './components/pages/Login';
 import Main from './components/pages/Main';
 import { ThemeContextProvider, ThemeContext } from './contexts/ThemeContext';
 
 type AppProps = {};
 
 const App = (props: AppProps): JSX.Element => {
-  const [login, setLogin] = React.useState(false);
-
-  React.useEffect(() => {
-    axios({
-      method: 'get',
-      url: `${axios.defaults.baseURL}/user/test`,
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          const testUser = res.data.user as User;
-          axios({
-            method: 'post',
-            url: `${axios.defaults.baseURL}/user/login/${testUser._id}`,
-            data: {
-              password: 'password',
-            },
-          })
-            .then((res) => {
-              if (res.status === 200) {
-                setLogin(true);
-                localStorage.setItem('userId', res.data.userId);
-                localStorage.setItem('token', res.data.token);
-              }
-            })
-            .catch((err) => {
-              console.error(err);
-            });
-        }
-      })
-      .catch(() => console.error(`Failed to load the test user`));
-  }, []);
-
-  if (!login) {
-    return <div></div>;
-  }
-
   return (
     <ThemeContextProvider>
       <ThemeContext.Consumer>
@@ -58,8 +22,9 @@ const App = (props: AppProps): JSX.Element => {
               <div className="app__container">
                 <BrowserRouter>
                   <Routes>
-                    <Route path="/" element={<Main />} />
-                    <Route path="*" element={<Navigate to="/" />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/home" element={<Main />} />
+                    <Route path="*" element={<Navigate to="/login" />} />
                   </Routes>
                 </BrowserRouter>
               </div>
