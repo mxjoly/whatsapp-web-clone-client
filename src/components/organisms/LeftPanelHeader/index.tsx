@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { MdDataUsage, MdMoreVert, MdChat } from 'react-icons/md';
 
@@ -32,10 +33,23 @@ const LeftPanelHeader = ({
       case 2:
         return;
       case 3:
-        // logout
-        navigate('/login');
-        localStorage.clear();
-        console.log('Log out successfully');
+        axios({
+          method: 'post',
+          url: `${axios.defaults.baseURL}/user/logout/${localStorage.getItem(
+            'userId'
+          )}`,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
+          .then((res) => {
+            if (res.status === 200) {
+              navigate('/login');
+              localStorage.clear();
+              console.log('Log out successfully');
+            }
+          })
+          .catch(() => console.error(`Failed to disconnect`));
         return;
     }
   };
