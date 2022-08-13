@@ -1,6 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import { useSocket } from '../../../contexts/SocketContext';
 
 import LeftPanel from '../../templates/LeftPanel';
 import RightPanel from '../../templates/RightPanel';
@@ -9,8 +8,6 @@ import './styles.scss';
 type MainProps = {};
 
 const Main = (props: MainProps): JSX.Element => {
-  const socketClient = useSocket();
-
   const [user, setUser] = React.useState<User>(null);
   const [chats, setChats] = React.useState<Chat[]>([]);
   const [messages, setMessages] = React.useState<Message[]>([]);
@@ -80,11 +77,6 @@ const Main = (props: MainProps): JSX.Element => {
   React.useEffect(() => {
     loadData();
   }, []);
-
-  React.useEffect(() => {
-    socketClient.on('change', loadData);
-    return () => socketClient.off('change', loadData);
-  }, [socketClient]);
 
   const handleChatSelection = (chatId: string) => {
     if (chatId) {

@@ -5,7 +5,6 @@ import './index.scss';
 
 import reportWebVitals from './reportWebVitals';
 import axios from 'axios';
-import { SocketProvider } from './contexts/SocketContext';
 
 axios.defaults.baseURL =
   process.env.NODE_ENV === 'development'
@@ -17,9 +16,7 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <SocketProvider>
-      <App />
-    </SocketProvider>
+    <App />
   </React.StrictMode>
 );
 
