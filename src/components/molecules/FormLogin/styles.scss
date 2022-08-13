@@ -23,13 +23,13 @@
     border: 1px solid rgba(0, 0, 0, 0.1);
 
     @include themed {
-      color: t('text-color-medium');
+      color: t('text-color-dark');
       background: t('background-light');
     }
 
     &::placeholder {
       @include themed {
-        color: t('text-color-light');
+        color: t('text-color-medium');
       }
       opacity: 1;
       font-size: 1.4rem;
