@@ -22,9 +22,9 @@ const App = (props: AppProps): JSX.Element => {
               <div className="app__container">
                 <BrowserRouter>
                   <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/home" element={<Main />} />
-                    <Route path="*" element={<Navigate to="/login" />} />
+                    <Route path="login" element={<Login />} />
+                    <Route path="home" element={<Main />} />
+                    <Route path="*" element={<Navigate to="login" />} />
                   </Routes>
                 </BrowserRouter>
               </div>
