@@ -18,6 +18,17 @@ const FormLogin = (props: FormLoginProps): JSX.Element => {
     password: '',
   });
 
+  React.useEffect(() => {
+    const onPress = (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        props.onLogin(state);
+      }
+    };
+
+    document.addEventListener('keydown', onPress);
+    return () => document.removeEventListener('keydown', onPress);
+  }, [state, props]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const inputValue = e.target.value;
     const inputName = e.target.name;

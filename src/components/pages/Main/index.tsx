@@ -1,10 +1,10 @@
 import React from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 import LeftPanel from '../../templates/LeftPanel';
 import RightPanel from '../../templates/RightPanel';
 import './styles.scss';
-import { useNavigate } from 'react-router-dom';
 
 type MainProps = {};
 
@@ -16,34 +16,48 @@ const Main = (props: MainProps): JSX.Element => {
   const [chatVisible, setChatVisible] = React.useState<boolean>(false);
   const [chatSelected, setChatSelected] = React.useState<Chat | null>(null);
 
-  React.useEffect(() => {
-    if (!localStorage.getItem('userId') || !localStorage.getItem('token')) {
-      navigate('/login');
-    }
-  }, [navigate]);
-
   function loadData() {
     const userId = localStorage.getItem('userId');
+    const token = localStorage.getItem('token');
 
     axios({
       method: 'get',
       url: `${axios.defaults.baseURL}/user/${userId}`,
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => {
         if (res.status === 200) {
           setUser(res.data.user);
+          if (res.data.user.online === false) {
+            axios({
+              method: 'post',
+              url: `${axios.defaults.baseURL}/user/update/${userId}`,
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+              data: {
+                ...res.data.user,
+                online: true,
+              },
+            })
+              .then(() => console.log('Reconnected successfully'))
+              .catch(() => console.error(`Failed to reconnect`));
+          }
         }
       })
-      .catch(() => console.error(`Failed to load the user data`));
+      .catch(() => {
+        console.error(`Failed to load the user data`);
+        localStorage.clear();
+        navigate('/login');
+      });
 
     axios({
       method: 'get',
       url: `${axios.defaults.baseURL}/chat/user/${userId}`,
       headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => {
@@ -60,7 +74,7 @@ const Main = (props: MainProps): JSX.Element => {
                   method: 'get',
                   url: `${axios.defaults.baseURL}/message/chat/${chat._id}`,
                   headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    Authorization: `Bearer ${token}`,
                   },
                 })
                   .then((res) => {
@@ -73,18 +87,47 @@ const Main = (props: MainProps): JSX.Element => {
             );
           });
 
-          Promise.all(promises).then((messages) => {
-            setMessages(messages.reduce((prev, cur) => prev.concat(cur), []));
-          });
+          Promise.all(promises)
+            .then((messages) => {
+              setMessages(messages.reduce((prev, cur) => prev.concat(cur), []));
+            })
+            .catch((err) => console.error(err));
         }
       })
       .catch(() => console.error(`Error trying to load the user chats`));
   }
 
-  // Programmatically login when we drop the login page
   React.useEffect(() => {
-    loadData();
-  }, []);
+    if (!localStorage.getItem('userId') || !localStorage.getItem('token')) {
+      navigate('/login');
+    } else {
+      loadData();
+    }
+  }, [navigate]);
+
+  React.useEffect(() => {
+    function disconnect(event) {
+      const userId = localStorage.getItem('userId');
+      const token = localStorage.getItem('token');
+      if (userId && token) {
+        axios({
+          method: 'post',
+          url: `${axios.defaults.baseURL}/user/update/${userId}`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          data: {
+            ...user,
+            online: false,
+          },
+        })
+          .then(() => console.log('Disconnected successfully'))
+          .catch(() => console.error(`Failed to disconnect`));
+      }
+    }
+    window.addEventListener('beforeunload', disconnect);
+    return () => window.removeEventListener('beforeunload', disconnect);
+  }, [user]);
 
   const handleChatSelection = (chatId: string) => {
     if (chatId) {
