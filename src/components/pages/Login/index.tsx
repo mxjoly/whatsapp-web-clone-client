@@ -1,4 +1,5 @@
 import React from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../../../api/user';
 
@@ -43,7 +44,7 @@ const Login = (props: LoginProps): JSX.Element => {
       <div className="login__container">
         <ThemeContext.Consumer>
           {({ isDark }) => (
-            <img
+            <LazyLoadImage
               alt="background"
               className="login__image"
               src={
