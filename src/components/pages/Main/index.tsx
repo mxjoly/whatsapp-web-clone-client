@@ -1,6 +1,9 @@
 import React from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { getUser, logoutUser, updateUser } from '../../../api/user';
+import { getChatsOfUser } from '../../../api/chat';
+import { getMessagesOnChat } from '../../../api/message';
 
 import LeftPanel from '../../templates/LeftPanel';
 import RightPanel from '../../templates/RightPanel';
@@ -19,83 +22,39 @@ const Main = (props: MainProps): JSX.Element => {
 
   function loadData() {
     const userId = localStorage.getItem('userId');
-    const token = localStorage.getItem('token');
 
-    axios({
-      method: 'get',
-      url: `${axios.defaults.baseURL}/user/${userId}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          setUser(res.data.user);
-          if (res.data.user.online === false) {
-            axios({
-              method: 'post',
-              url: `${axios.defaults.baseURL}/user/update/${userId}`,
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-              data: {
-                ...res.data.user,
-                online: true,
-              },
-            })
-              .then(() => console.log('Reconnected successfully'))
-              .catch(() => console.error(`Failed to reconnect`));
+    getUser(userId)
+      .then((userData) => {
+        if (userData) {
+          setUser(userData);
+          if (userData.online === false) {
+            updateUser(userId, { ...userData, online: true });
           }
         }
       })
       .catch(() => {
-        console.error(`Failed to load the user data`);
         localStorage.clear();
         navigate('/login');
       });
 
-    axios({
-      method: 'get',
-      url: `${axios.defaults.baseURL}/chat/user/${userId}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          const chats = res.data.chats as Chat[];
-          setChats(res.data.chats);
+    getChatsOfUser(userId).then((chats) => {
+      setChats(chats);
+      let promises: Promise<Message[]>[] = [];
 
-          let promises: Promise<Message[]>[] = [];
+      chats.forEach((chat) => {
+        promises.push(
+          new Promise<Message[]>((resolve, reject) => {
+            getMessagesOnChat(chat._id).then((messages) => resolve(messages));
+          })
+        );
+      });
 
-          chats.forEach((chat) => {
-            promises.push(
-              new Promise<Message[]>((resolve, reject) => {
-                axios({
-                  method: 'get',
-                  url: `${axios.defaults.baseURL}/message/chat/${chat._id}`,
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                })
-                  .then((res) => {
-                    if (res.status === 200) {
-                      resolve(res.data.messages);
-                    }
-                  })
-                  .catch(reject);
-              })
-            );
-          });
-
-          Promise.all(promises)
-            .then((messages) => {
-              setMessages(messages.reduce((prev, cur) => prev.concat(cur), []));
-            })
-            .catch((err) => console.error(err));
-        }
-      })
-      .catch(() => console.error(`Error trying to load the user chats`));
+      Promise.all(promises)
+        .then((messages) => {
+          setMessages(messages.reduce((prev, cur) => prev.concat(cur), []));
+        })
+        .catch((err) => console.error(err));
+    });
   }
 
   React.useEffect(() => {
@@ -112,19 +71,7 @@ const Main = (props: MainProps): JSX.Element => {
       const userId = localStorage.getItem('userId');
       const token = localStorage.getItem('token');
       if (userId && token) {
-        axios({
-          method: 'post',
-          url: `${axios.defaults.baseURL}/user/update/${userId}`,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          data: {
-            ...user,
-            online: false,
-          },
-        })
-          .then(() => console.log('Disconnected successfully'))
-          .catch(() => console.error(`Failed to disconnect`));
+        logoutUser(userId);
       }
     }
     window.addEventListener('beforeunload', disconnect);

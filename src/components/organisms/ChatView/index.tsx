@@ -1,7 +1,7 @@
 import React from 'react';
 import dayjs from 'dayjs';
-import axios from 'axios';
 import { mongoObjectId } from '../../../utils/id';
+import { createMessage } from '../../../api/message';
 
 import ChatHeader from '../ChatHeader';
 import ChatFooter from '../ChatFooter';
@@ -26,26 +26,22 @@ const ChatView = ({
   onDisplayContactInfo,
 }: ChatViewProps): JSX.Element => {
   const sendMessage = (messageContent: MessageContent) => {
-    axios({
-      method: 'post',
-      url: `${axios.defaults.baseURL}/message/insert`,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+    createMessage({
+      _id: mongoObjectId(),
+      chatId: chat._id,
+      content: {
+        ...messageContent,
       },
-      data: {
-        _id: mongoObjectId(),
-        chatId: chat._id,
-        content: {
-          ...messageContent,
-        },
-        createdAt: dayjs().toDate(),
-        senderId: localStorage.getItem('userId'),
-        read: [],
-        type: 'TEXT',
-      },
-    })
-      .then(() => console.log(`Message sent`))
-      .catch(() => console.error(`Failed to send the message`));
+      createdAt: dayjs().toDate(),
+      senderId: localStorage.getItem('userId'),
+      read: [],
+      type:
+        messageContent.text !== ''
+          ? 'TEXT'
+          : messageContent.pictureUrl !== ''
+          ? 'IMAGE'
+          : 'AUDIO',
+    });
   };
 
   return (

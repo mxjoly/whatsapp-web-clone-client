@@ -1,6 +1,6 @@
 import React from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { loginUser } from '../../../api/user';
 
 import { ThemeContext } from '../../../contexts/ThemeContext';
 import FormLogin from '../../molecules/FormLogin';
@@ -24,31 +24,18 @@ const Login = (props: LoginProps): JSX.Element => {
     phone: string;
     password: string;
   }) => {
-    axios({
-      method: 'post',
-      url: `${axios.defaults.baseURL}/user/login`,
-      data: {
-        password: 'password',
-        username: state.username,
-        phone: state.phone,
-      },
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          console.log(`Login successfully`);
-          navigate('/home');
-          console.log(res.data);
-          localStorage.setItem('userId', res.data.userId);
-          localStorage.setItem('token', res.data.token);
-        }
-      })
-      .catch((err) => {
-        console.error(`Failed to login`);
-      });
+    loginUser(state.username, state.password, state.phone).then(
+      ({ token, userId }) => {
+        navigate('/home');
+        console.log({ token, userId });
+        localStorage.setItem('userId', userId);
+        localStorage.setItem('token', token);
+      }
+    );
   };
 
   if (!loaded) {
-    return null;
+    return <div className="login"></div>;
   }
 
   return (

@@ -1,9 +1,10 @@
 import React from 'react';
-import axios from 'axios';
 import dayjs from 'dayjs';
-import IconWithMenu from '../IconWithMenu';
+import { deleteMessage } from '../../../api/message';
+
 import { TbChevronDown } from 'react-icons/tb';
 import { MdDone } from 'react-icons/md';
+import IconWithMenu from '../IconWithMenu';
 import './styles.scss';
 
 type MessageBoxProps = {
@@ -27,17 +28,7 @@ const MessageBox = ({ className, message, side }: MessageBoxProps) => {
       case 3:
         return;
       case 4:
-        axios({
-          method: 'delete',
-          url: `${axios.defaults.baseURL}/message/delete/${message._id}`,
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        })
-          .then(() => console.log(`Message ${message._id} deleted`))
-          .catch(() =>
-            console.error(`Failed to delete the message ${message._id}`)
-          );
+        deleteMessage(message._id);
         return;
     }
   };

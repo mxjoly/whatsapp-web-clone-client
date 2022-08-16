@@ -1,5 +1,5 @@
 import React from 'react';
-import axios from 'axios';
+import { updateUser } from '../../../api/user';
 
 import { MdArrowBack, MdEdit } from 'react-icons/md';
 import Avatar from '../../atoms/Avatar';
@@ -21,48 +21,22 @@ const UserPanel = ({ className, user, onBack, isOpen }: UserPanelProps) => {
   const updateUsername = (newUsername: string) => {
     if (newUsername === user.username) return;
 
-    axios({
-      method: 'post',
-      url: `${axios.defaults.baseURL}/user/update/${user._id}`,
-      data: {
-        ...user,
-        username: newUsername,
-      },
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          console.log(`Username updated`);
-        }
-      })
-      .catch(() => console.error(`Failed to update the username`));
+    updateUser(user._id, {
+      ...user,
+      username: newUsername,
+    });
   };
 
   const updateStatus = (newStatus: string) => {
     if (newStatus === user.profile.status) return;
 
-    axios({
-      method: 'post',
-      url: `${axios.defaults.baseURL}/user/update/${user._id}`,
-      data: {
-        ...user,
-        profile: {
-          ...user.profile,
-          status: user.profile.status,
-        },
+    updateUser(user._id, {
+      ...user,
+      profile: {
+        ...user.profile,
+        status: user.profile.status,
       },
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          console.log(`Status updated`);
-        }
-      })
-      .catch(() => console.error(`Failed to update the status`));
+    });
   };
 
   React.useEffect(() => {

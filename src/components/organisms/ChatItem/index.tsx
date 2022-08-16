@@ -1,6 +1,7 @@
 import React from 'react';
-import axios from 'axios';
 import { getDateLabel } from '../../../utils/date';
+import { getUser } from '../../../api/user';
+import { updateMessage } from '../../../api/message';
 
 import Avatar from '../../atoms/Avatar';
 import IconWithMenu from '../../molecules/IconWithMenu';
@@ -42,21 +43,9 @@ const ChatItem = ({
         ? participants[1]
         : participants[0];
 
-    axios({
-      method: 'get',
-      url: `${axios.defaults.baseURL}/user/${otherParticipantId}`,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          setOtherParticipant(res.data.user);
-        }
-      })
-      .catch(() =>
-        console.error(`Failed to load the data of user ${otherParticipantId}`)
-      );
+    getUser(otherParticipantId).then((user) => {
+      setOtherParticipant(user);
+    });
   }, [participants]);
 
   React.useEffect(() => {
@@ -89,27 +78,22 @@ const ChatItem = ({
           break;
         } else {
           messages[i].read.push(myId);
-          axios({
-            method: 'post',
-            url: `${axios.defaults.baseURL}/message/update/${messages[i]._id}`,
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
-            },
-            data: {
-              ...messages[i],
-            },
-          })
-            .then(() => console.log(`Message ${messages[i]._id} updated`))
-            .catch(() =>
-              console.error(`Failed to update the message ${messages[i]._id}`)
-            );
+          updateMessage(messages[i]._id, {
+            ...messages[i],
+          });
         }
       }
     }
   };
 
   if (!lastMessage) {
-    return <div></div>;
+    return (
+      <div
+        className={['chatItem', active && 'chatItem--active']
+          .filter(Boolean)
+          .join(' ')}
+      ></div>
+    );
   }
 
   return (

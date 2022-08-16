@@ -1,5 +1,4 @@
 import React from 'react';
-import axios from 'axios';
 
 import { MdArrowBack } from 'react-icons/md';
 import './styles.scss';

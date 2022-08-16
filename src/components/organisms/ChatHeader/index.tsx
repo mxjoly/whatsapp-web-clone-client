@@ -1,5 +1,6 @@
 import React from 'react';
-import axios from 'axios';
+import { getUser } from '../../../api/user';
+import { deleteMessagesOnChat } from '../../../api/message';
 
 import Avatar from '../../atoms/Avatar';
 import { MdMoreVert, MdOutlineSearch } from 'react-icons/md';
@@ -29,21 +30,9 @@ const ChatHeader = ({
         ? chat.participants[1]
         : chat.participants[0];
 
-    axios({
-      method: 'get',
-      url: `${axios.defaults.baseURL}/user/${otherParticipantId}`,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          setOtherParticipant(res.data.user);
-        }
-      })
-      .catch(() =>
-        console.error(`Failed to load the data of user ${otherParticipantId}`)
-      );
+    getUser(otherParticipantId).then((user) => {
+      setOtherParticipant(user);
+    });
   }, [chat]);
 
   const onClickSearch = () => {};
@@ -63,17 +52,7 @@ const ChatHeader = ({
       case 4:
         return;
       case 5:
-        axios({
-          method: 'delete',
-          url: `${axios.defaults.baseURL}/deleteForChat/${chat._id}`,
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
-          },
-        })
-          .then(() => console.log(`Messages of the chat ${chat._id} deleted`))
-          .catch(() =>
-            console.error(`Failed to delete the messages of chat ${chat._id}`)
-          );
+        deleteMessagesOnChat(chat._id);
         return;
       case 6:
         onDeleteChat(chat._id);
@@ -82,7 +61,7 @@ const ChatHeader = ({
   };
 
   if (!otherParticipant) {
-    return <div></div>;
+    return <div className={['chatHeader', className].join(' ')}></div>;
   }
 
   return (

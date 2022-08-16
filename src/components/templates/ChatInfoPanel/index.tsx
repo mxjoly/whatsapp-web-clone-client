@@ -1,5 +1,6 @@
-import axios from 'axios';
 import React from 'react';
+import { getUser } from '../../../api/user';
+
 import { IconType } from 'react-icons';
 import {
   MdClose,
@@ -12,7 +13,6 @@ import {
   MdThumbDown,
   MdDelete,
 } from 'react-icons/md';
-
 import Avatar from '../../atoms/Avatar';
 import './styles.scss';
 
@@ -38,23 +38,9 @@ const ChatInfoPanel = ({
           ? chat.participants[1]
           : chat.participants[0];
 
-      axios({
-        method: 'get',
-        url: `${axios.defaults.baseURL}/user/${otherParticipantId}`,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      })
-        .then((res) => {
-          if (res.status === 200) {
-            setOtherParticipant(res.data.user);
-          }
-        })
-        .catch(() =>
-          console.error(
-            `Failed to find the other participant for the chat ${chat._id}`
-          )
-        );
+      getUser(otherParticipantId).then((user) => {
+        setOtherParticipant(user);
+      });
     }
   }, [chat]);
 

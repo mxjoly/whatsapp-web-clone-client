@@ -31,7 +31,7 @@ interface Message {
   chatId: string;
   content: MessageContent;
   createdAt: Date;
-  type: 'TEXT' | 'IMAGE';
+  type: 'TEXT' | 'IMAGE' | 'AUDIO';
   senderId: string;
   read: string[]; // id of user that read the message
 }
