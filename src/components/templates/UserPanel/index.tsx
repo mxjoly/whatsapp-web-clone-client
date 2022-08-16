@@ -81,7 +81,11 @@ const UserPanel = ({ className, user, onBack, isOpen }: UserPanelProps) => {
         <MdArrowBack className="userPanel__header__arrow" onClick={onBack} />
         <span className="userPanel__header__title">Profil</span>
       </div>
-      <Avatar avatarUrl={user.profile.picture} iconClassName={avatarClasses} />
+      <Avatar
+        avatarUrl={user.profile.picture}
+        iconClassName={avatarClasses}
+        editable
+      />
       <div className={sectionClasses}>
         <span className="userPanel__section__title">Votre nom</span>
         <div className="userPanel__section__row">

@@ -81,6 +81,38 @@ export function updateUser(userId: string, userNewProps: User) {
   }
 }
 
+export function updateProfilePicture(userId: string, picture: File) {
+  const token = localStorage.getItem('token');
+  if (token && picture) {
+    return new Promise<string>((resolve) => {
+      let formData = new FormData();
+      formData.append('image', picture);
+
+      axios
+        .put(
+          `${axios.defaults.baseURL}/user/updateProfilePicture/${userId}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        )
+        .then((res) => {
+          if (res.status === 200) {
+            console.log(`Update the profile picture`);
+            resolve(res.data.pictureUrl);
+          } else {
+            throw new Error();
+          }
+        });
+    });
+  } else {
+    console.error(`No token found`);
+  }
+}
+
 export function loginUser(username: string, password: string, phone: string) {
   return new Promise<{ userId: string; token: string }>((resolve) => {
     axios({

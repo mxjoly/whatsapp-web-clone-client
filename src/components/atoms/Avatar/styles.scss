@@ -4,17 +4,56 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
+  background: transparent;
+  position: relative;
+  overflow: hidden;
 
-  @include themed {
-    background: t('background-dark');
+  &__img {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+
+    &--large {
+      font-size: 6rem;
+      width: 6rem;
+      height: 6rem;
+    }
   }
 
-  &--large {
-    font-size: 6rem;
-    width: 6rem;
-    height: 6rem;
+  &__overlay {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    &__camera {
+      width: 3rem;
+      height: 3rem;
+      color: #e9edef;
+    }
+
+    &__text {
+      width: 80%;
+      height: min-content;
+      font-size: 1.6rem;
+      color: #e9edef;
+      text-align: center;
+    }
+
+    &__input {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+
+      &::-webkit-file-upload-button {
+        cursor: pointer;
+        visibility: hidden;
+      }
+    }
   }
 }
