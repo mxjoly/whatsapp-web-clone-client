@@ -2,16 +2,15 @@ import React from 'react';
 import dayjs from 'dayjs';
 
 import ChatItem from '../ChatItem';
-import ArchivePanel from '../ArchivePanel';
 import './styles.scss';
 
 type ChatListProps = {
   chats: Chat[];
   messages: Message[];
+  chatMenuItems: string[];
+  onSelectChatMenuItems: (index: number, chatId: string) => void;
   onSelectChat?: (chatId: string) => void;
-  onDeleteChat?: (chatId: string) => void;
   chatSelected?: Chat | null;
-  onClickArchive?: () => void;
 };
 
 const ChatList = ({
@@ -19,8 +18,8 @@ const ChatList = ({
   messages,
   chatSelected,
   onSelectChat,
-  onDeleteChat,
-  onClickArchive,
+  chatMenuItems,
+  onSelectChatMenuItems,
 }: ChatListProps): JSX.Element => {
   function findLastMessageChat(chat: Chat) {
     const chatMessages = messages.filter((msg) => msg.chatId === chat._id);
@@ -34,7 +33,6 @@ const ChatList = ({
 
   return (
     <div className="chatList">
-      <ArchivePanel onClick={onClickArchive} />
       {chats
         .sort((chat1, chat2) => {
           let lastMessageChat1 = findLastMessageChat(chat1);
@@ -53,7 +51,8 @@ const ChatList = ({
             key={chat._id}
             {...chat}
             onSelectChat={onSelectChat}
-            onDeleteChat={onDeleteChat}
+            onSelectMenuItems={onSelectChatMenuItems}
+            menuItems={chatMenuItems}
             active={chatSelected !== null && chat._id === chatSelected._id}
             messages={messages.filter((msg) => msg.chatId === chat._id)}
           />

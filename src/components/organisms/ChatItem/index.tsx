@@ -13,9 +13,10 @@ type ChatItemProps = {
   picture?: string;
   participants: string[];
   onSelectChat?: (chatId: string) => void;
-  onDeleteChat?: (chatId: string) => void;
   active?: boolean;
   messages: Message[];
+  menuItems: string[];
+  onSelectMenuItems: (index: number, chatId: string) => void;
 };
 
 const ChatItem = ({
@@ -24,9 +25,10 @@ const ChatItem = ({
   participants,
   picture,
   active,
-  onSelectChat,
-  onDeleteChat,
   messages,
+  menuItems,
+  onSelectChat,
+  onSelectMenuItems,
 }: ChatItemProps): JSX.Element => {
   const [hover, setHover] = React.useState(false);
   const [otherParticipant, setOtherParticipant] = React.useState<User>(null);
@@ -106,22 +108,6 @@ const ChatItem = ({
     }
   };
 
-  const handleSelectMenuItem = (index: number) => {
-    switch (index) {
-      case 0:
-        return;
-      case 1:
-        return;
-      case 2:
-        onDeleteChat(_id);
-        return;
-      case 3:
-        return;
-      case 4:
-        return;
-    }
-  };
-
   if (!lastMessage) {
     return <div></div>;
   }
@@ -171,15 +157,9 @@ const ChatItem = ({
                 .filter(Boolean)
                 .join(' ')}
               Icon={TbChevronDown}
-              menuItems={[
-                'Archiver la discussion',
-                'Notification en mode silencieuses',
-                'Supprimer la discussion',
-                'Épingler la discussion',
-                'Marquer comme non lu',
-              ]}
+              menuItems={menuItems}
               menuPlacement="right"
-              onSelectMenuItem={handleSelectMenuItem}
+              onSelectMenuItem={(index) => onSelectMenuItems(index, _id)}
             />
           )}
         </div>

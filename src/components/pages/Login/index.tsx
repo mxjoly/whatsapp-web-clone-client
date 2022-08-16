@@ -9,12 +9,14 @@ import './styles.scss';
 type LoginProps = {};
 
 const Login = (props: LoginProps): JSX.Element => {
+  const [loaded, setLoaded] = React.useState(false);
   const navigate = useNavigate();
 
   React.useEffect(() => {
     if (localStorage.getItem('userId') && localStorage.getItem('token')) {
       navigate('/home');
     }
+    setLoaded(true);
   }, [navigate]);
 
   const handleLogin = (state: {
@@ -44,6 +46,10 @@ const Login = (props: LoginProps): JSX.Element => {
         console.error(`Failed to login`);
       });
   };
+
+  if (!loaded) {
+    return null;
+  }
 
   return (
     <div className="login">

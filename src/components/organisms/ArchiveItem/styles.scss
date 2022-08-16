@@ -1,6 +1,6 @@
 @import '../../../scss/theme';
 
-.archivePanel {
+.archiveItem {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -22,7 +22,7 @@
       align-items: center;
       width: 8rem;
       height: 100%;
-      padding: 1rem 0;
+      padding: 1.5rem 0;
       box-sizing: border-box;
     }
 

@@ -10,6 +10,7 @@ type MainProps = {};
 
 const Main = (props: MainProps): JSX.Element => {
   const navigate = useNavigate();
+
   const [user, setUser] = React.useState<User>(null);
   const [chats, setChats] = React.useState<Chat[]>([]);
   const [messages, setMessages] = React.useState<Message[]>([]);
@@ -105,6 +106,7 @@ const Main = (props: MainProps): JSX.Element => {
     }
   }, [navigate]);
 
+  // DOES NOT WORK
   React.useEffect(() => {
     function disconnect(event) {
       const userId = localStorage.getItem('userId');
@@ -147,10 +149,41 @@ const Main = (props: MainProps): JSX.Element => {
       })
         .then((res) => {
           if (res.status === 200) {
+            setChats((chats) => chats.filter((chat) => chat._id !== chatId));
             console.log(`Chat ${chatId} deleted`);
           }
         })
         .catch(() => console.error(`Failed to delete the chat ${chatId}`));
+    }
+  };
+
+  const handleChatArchive = (chatId: string, archived: boolean) => {
+    const chat = chats.find((chat) => chat._id === chatId);
+    if (chat) {
+      axios({
+        method: 'post',
+        url: `${axios.defaults.baseURL}/chat/update/${chatId}`,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        data: {
+          ...chat,
+          archived,
+        },
+      })
+        .then((res) => {
+          if (res.status === 200) {
+            setChats((chats) =>
+              chats.map((c) => (chat._id === c._id ? { ...c, archived } : c))
+            );
+            console.log(`Chat ${chat._id} updated`);
+          }
+        })
+        .catch(() => console.error(`Failed to update the chat ${chat._id}`));
+    } else {
+      console.error(
+        `Chat ${chat._id} cannot be updated because he has been not found`
+      );
     }
   };
 
@@ -162,7 +195,7 @@ const Main = (props: MainProps): JSX.Element => {
   };
 
   if (!user) {
-    return <div></div>;
+    return <div className="main"></div>;
   }
 
   return (
@@ -171,6 +204,8 @@ const Main = (props: MainProps): JSX.Element => {
         className="main__leftPanel"
         onSelectChat={handleChatSelection}
         onDeleteChat={handleChatDelete}
+        onArchiveChat={(chatId) => handleChatArchive(chatId, true)}
+        onUnarchiveChat={(chatId) => handleChatArchive(chatId, false)}
         chatSelected={chatSelected}
         chats={chats}
         user={user}

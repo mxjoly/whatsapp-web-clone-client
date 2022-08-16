@@ -8,7 +8,8 @@
   width: 100%;
   height: min-content;
   user-select: none;
-  cursor: pointer;
+  padding: 1.5rem;
+  box-sizing: border-box;
 
   @include themed {
     background: t('background-notification');
@@ -22,7 +23,6 @@
       align-items: center;
       width: 8rem;
       height: 100%;
-      padding: 1.5rem 0;
     }
 
     &--right {
@@ -33,7 +33,6 @@
       text-align: left;
       width: 100%;
       height: 100%;
-      padding: 1.5rem 1.5rem 1.5rem 0;
     }
   }
 
@@ -78,6 +77,17 @@
       height: 2rem;
       font-size: 2rem;
       padding-top: 3px;
+    }
+  }
+
+  &__close {
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+    cursor: pointer;
+
+    @include themed {
+      color: t('text-color-medium');
     }
   }
 }

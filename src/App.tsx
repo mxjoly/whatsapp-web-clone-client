@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { isMobile } from 'react-device-detect';
 
 import './App.scss';
 import Login from './components/pages/Login';
@@ -9,6 +10,10 @@ import { ThemeContextProvider, ThemeContext } from './contexts/ThemeContext';
 type AppProps = {};
 
 const App = (props: AppProps): JSX.Element => {
+  // if (isMobile) {
+  //   return <p>This content is available only on mobile</p>;
+  // }
+
   return (
     <ThemeContextProvider>
       <ThemeContext.Consumer>
