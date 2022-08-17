@@ -47,7 +47,6 @@ const Login = (props: LoginProps): JSX.Element => {
             <LazyLoadImage
               alt="background"
               className="login__image"
-              visibleByDefault
               src={
                 isDark
                   ? './images/connection-dark.jpg'
