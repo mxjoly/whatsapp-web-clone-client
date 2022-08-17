@@ -6,13 +6,31 @@ import './App.scss';
 import Login from './components/pages/Login';
 import Main from './components/pages/Main';
 import { ThemeContextProvider, ThemeContext } from './contexts/ThemeContext';
+import { MdOutlineWarning } from 'react-icons/md';
 
 type AppProps = {};
 
 const App = (props: AppProps): JSX.Element => {
-  // if (isMobile) {
-  //   return <p>This content is available only on mobile</p>;
-  // }
+  if (isMobile) {
+    return (
+      <ThemeContextProvider>
+        <ThemeContext.Consumer>
+          {({ isDark }) => (
+            <div className={`${isDark ? 'theme--dark' : 'theme--light'}`}>
+              <div className="app">
+                <div className="app__container">
+                  <MdOutlineWarning className="app__warningIcon" />
+                  <p className="app__info">
+                    Cette application est uniquement disponible sur ordinateur
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </ThemeContext.Consumer>
+      </ThemeContextProvider>
+    );
+  }
 
   return (
     <ThemeContextProvider>

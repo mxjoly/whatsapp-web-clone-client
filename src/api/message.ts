@@ -23,13 +23,14 @@ export function getAllMessages() {
     });
   } else {
     console.error(`No token found`);
+    return Promise.reject();
   }
 }
 
 export function getMessage(msgId: string) {
   const token = localStorage.getItem('token');
   if (token) {
-    return new Promise<Message[]>((resolve) => {
+    return new Promise<Message[]>((resolve, reject) => {
       axios({
         method: 'get',
         url: `${axios.defaults.baseURL}/message/${msgId}`,
@@ -45,19 +46,21 @@ export function getMessage(msgId: string) {
             throw new Error();
           }
         })
-        .catch(() =>
-          console.error(`Failed to get the data of message ${msgId}`)
-        );
+        .catch(() => {
+          console.error(`Failed to get the data of message ${msgId}`);
+          reject();
+        });
     });
   } else {
     console.error(`No token found`);
+    return Promise.reject();
   }
 }
 
 export function getMessagesOnChat(chatId: string) {
   const token = localStorage.getItem('token');
   if (token) {
-    return new Promise<Message[]>((resolve) => {
+    return new Promise<Message[]>((resolve, reject) => {
       axios({
         method: 'get',
         url: `${axios.defaults.baseURL}/message/chat/${chatId}`,
@@ -73,19 +76,21 @@ export function getMessagesOnChat(chatId: string) {
             throw new Error();
           }
         })
-        .catch(() =>
-          console.error(`failed to load the messages on chat ${chatId}`)
-        );
+        .catch(() => {
+          console.error(`failed to load the messages on chat ${chatId}`);
+          reject();
+        });
     });
   } else {
     console.error(`No token found`);
+    return Promise.reject();
   }
 }
 
 export function createMessage(props: Message) {
   const token = localStorage.getItem('token');
   if (token) {
-    return new Promise<void>((resolve) => {
+    return new Promise<void>((resolve, reject) => {
       axios({
         method: 'post',
         url: `${axios.defaults.baseURL}/message/create`,
@@ -102,17 +107,21 @@ export function createMessage(props: Message) {
             throw new Error();
           }
         })
-        .catch(() => console.error(`Failed to create a message`));
+        .catch(() => {
+          console.error(`Failed to create a message`);
+          reject();
+        });
     });
   } else {
     console.error(`No token found`);
+    return Promise.reject();
   }
 }
 
 export function deleteMessage(msgId: string) {
   const token = localStorage.getItem('token');
   if (token) {
-    return new Promise<void>((resolve) => {
+    return new Promise<void>((resolve, reject) => {
       axios({
         method: 'delete',
         url: `${axios.defaults.baseURL}/message/delete/${msgId}`,
@@ -128,17 +137,21 @@ export function deleteMessage(msgId: string) {
             throw new Error();
           }
         })
-        .catch(() => console.error(`Failed to delete the message ${msgId}`));
+        .catch(() => {
+          console.error(`Failed to delete the message ${msgId}`);
+          reject();
+        });
     });
   } else {
     console.error(`No token found`);
+    return Promise.reject();
   }
 }
 
 export function deleteMessagesOnChat(chatId: string) {
   const token = localStorage.getItem('token');
   if (token) {
-    return new Promise<void>((resolve) => {
+    return new Promise<void>((resolve, reject) => {
       axios({
         method: 'delete',
         url: `${axios.defaults.baseURL}/deleteOnChat/${chatId}`,
@@ -154,19 +167,21 @@ export function deleteMessagesOnChat(chatId: string) {
             throw new Error();
           }
         })
-        .catch(() =>
-          console.error(`Failed to delete the messages of chat ${chatId}`)
-        );
+        .catch(() => {
+          console.error(`Failed to delete the messages of chat ${chatId}`);
+          reject();
+        });
     });
   } else {
     console.error(`No token found`);
+    return Promise.reject();
   }
 }
 
 export function updateMessage(msgId: string, newProps: Message) {
   const token = localStorage.getItem('token');
   if (token) {
-    return new Promise<void>((resolve) => {
+    return new Promise<void>((resolve, reject) => {
       axios({
         method: 'post',
         url: `${axios.defaults.baseURL}/message/update/${msgId}`,
@@ -183,9 +198,13 @@ export function updateMessage(msgId: string, newProps: Message) {
             throw new Error();
           }
         })
-        .catch(() => console.error(`Failed to update the message ${msgId}`));
+        .catch(() => {
+          console.error(`Failed to update the message ${msgId}`);
+          reject();
+        });
     });
   } else {
     console.error(`No token found`);
+    return Promise.reject();
   }
 }

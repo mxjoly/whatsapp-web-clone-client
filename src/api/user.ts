@@ -3,7 +3,7 @@ import axios from 'axios';
 export function getUser(userId: string) {
   const token = localStorage.getItem('token');
   if (token) {
-    return new Promise<User>((resolve) => {
+    return new Promise<User>((resolve, reject) => {
       axios({
         method: 'get',
         url: `${axios.defaults.baseURL}/user/${userId}`,
@@ -19,17 +19,21 @@ export function getUser(userId: string) {
             throw new Error();
           }
         })
-        .catch(() => console.error(`Failed to load the user ${userId}`));
+        .catch(() => {
+          console.error(`Failed to load the user ${userId}`);
+          reject();
+        });
     });
   } else {
     console.error(`No token found`);
+    return Promise.reject();
   }
 }
 
 export function getAllUsers() {
   const token = localStorage.getItem('token');
   if (token) {
-    return new Promise<User[]>((resolve) => {
+    return new Promise<User[]>((resolve, reject) => {
       axios({
         method: 'get',
         url: `${axios.defaults.baseURL}/user`,
@@ -45,17 +49,21 @@ export function getAllUsers() {
             throw new Error();
           }
         })
-        .catch(() => console.error(`Failed to load the users`));
+        .catch(() => {
+          console.error(`Failed to load the users`);
+          reject();
+        });
     });
   } else {
     console.error(`No token found`);
+    return Promise.reject();
   }
 }
 
 export function updateUser(userId: string, userNewProps: User) {
   const token = localStorage.getItem('token');
   if (token) {
-    return new Promise<void>((resolve) => {
+    return new Promise<void>((resolve, reject) => {
       axios({
         method: 'post',
         url: `${axios.defaults.baseURL}/user/update/${userId}`,
@@ -74,17 +82,21 @@ export function updateUser(userId: string, userNewProps: User) {
             throw new Error();
           }
         })
-        .catch(() => console.error(`Failed to update user ${userId}`));
+        .catch(() => {
+          console.error(`Failed to update user ${userId}`);
+          reject();
+        });
     });
   } else {
     console.error(`No token found`);
+    return Promise.reject();
   }
 }
 
 export function updateProfilePicture(userId: string, picture: File) {
   const token = localStorage.getItem('token');
   if (token && picture) {
-    return new Promise<string>((resolve) => {
+    return new Promise<string>((resolve, reject) => {
       let formData = new FormData();
       formData.append('image', picture);
 
@@ -106,15 +118,22 @@ export function updateProfilePicture(userId: string, picture: File) {
           } else {
             throw new Error();
           }
+        })
+        .catch(() => {
+          console.log(
+            `Failed to update the profile picture for the user ${userId}`
+          );
+          reject();
         });
     });
   } else {
     console.error(`No token found`);
+    return Promise.reject();
   }
 }
 
 export function loginUser(username: string, password: string, phone: string) {
-  return new Promise<{ userId: string; token: string }>((resolve) => {
+  return new Promise<{ userId: string; token: string }>((resolve, reject) => {
     axios({
       method: 'post',
       url: `${axios.defaults.baseURL}/user/login`,
@@ -132,14 +151,17 @@ export function loginUser(username: string, password: string, phone: string) {
           throw new Error();
         }
       })
-      .catch(() => console.error(`Failed to login`));
+      .catch(() => {
+        console.error(`Failed to login`);
+        reject();
+      });
   });
 }
 
 export function logoutUser(userId: string) {
   const token = localStorage.getItem('token');
   if (token) {
-    return new Promise<void>((resolve) => {
+    return new Promise<void>((resolve, reject) => {
       axios({
         method: 'post',
         url: `${axios.defaults.baseURL}/user/logout/${userId}`,
@@ -155,9 +177,13 @@ export function logoutUser(userId: string) {
             throw new Error();
           }
         })
-        .catch(() => console.error(`Failed to logout`));
+        .catch(() => {
+          console.error(`Failed to logout`);
+          reject();
+        });
     });
   } else {
     console.error(`No token found`);
+    return Promise.reject();
   }
 }

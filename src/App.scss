@@ -59,4 +59,21 @@
       height: 100%;
     }
   }
+
+  &__info {
+    font-size: 1rem;
+    line-height: 1rem;
+    @include themed {
+      color: t('text-color-medium');
+    }
+  }
+
+  &__warningIcon {
+    width: 2rem;
+    height: 2rem;
+    margin-right: 0.6rem;
+    @include themed {
+      color: t('text-color-medium');
+    }
+  }
 }

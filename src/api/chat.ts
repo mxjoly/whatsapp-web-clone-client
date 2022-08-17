@@ -3,7 +3,7 @@ import axios from 'axios';
 export function getChat(chatId: string) {
   const token = localStorage.getItem('token');
   if (token) {
-    return new Promise<Chat>((resolve) => {
+    return new Promise<Chat>((resolve, reject) => {
       axios({
         method: 'get',
         url: `${axios.defaults.baseURL}/chat/${chatId}`,
@@ -19,17 +19,21 @@ export function getChat(chatId: string) {
             throw new Error();
           }
         })
-        .catch(() => console.error(`Failed to load the chat ${chatId}`));
+        .catch(() => {
+          console.error(`Failed to load the chat ${chatId}`);
+          reject();
+        });
     });
   } else {
     console.error(`No token found`);
+    return Promise.reject();
   }
 }
 
 export function getAllChats() {
   const token = localStorage.getItem('token');
   if (token) {
-    return new Promise<Chat[]>((resolve) => {
+    return new Promise<Chat[]>((resolve, reject) => {
       axios({
         method: 'get',
         url: `${axios.defaults.baseURL}/chat`,
@@ -45,17 +49,21 @@ export function getAllChats() {
             throw new Error();
           }
         })
-        .catch(() => console.error(`Failed to load all the chats`));
+        .catch(() => {
+          console.error(`Failed to load all the chats`);
+          reject();
+        });
     });
   } else {
     console.error(`No token found`);
+    return Promise.reject();
   }
 }
 
 export function getChatsOfUser(userId: string) {
   const token = localStorage.getItem('token');
   if (token) {
-    return new Promise<Chat[]>((resolve) => {
+    return new Promise<Chat[]>((resolve, reject) => {
       axios({
         method: 'get',
         url: `${axios.defaults.baseURL}/chat/user/${userId}`,
@@ -71,19 +79,21 @@ export function getChatsOfUser(userId: string) {
             throw new Error();
           }
         })
-        .catch(() =>
-          console.error(`Failed to load the chats for user ${userId}`)
-        );
+        .catch(() => {
+          console.error(`Failed to load the chats for user ${userId}`);
+          reject();
+        });
     });
   } else {
     console.error(`No token found`);
+    return Promise.reject();
   }
 }
 
 export function createChat(props: Chat) {
   const token = localStorage.getItem('token');
   if (token) {
-    return new Promise<Chat>((resolve) => {
+    return new Promise<Chat>((resolve, reject) => {
       axios({
         method: 'post',
         url: `${axios.defaults.baseURL}/chat/create`,
@@ -99,17 +109,21 @@ export function createChat(props: Chat) {
             throw new Error();
           }
         })
-        .catch(() => console.error(`Failed to create the chat`));
+        .catch(() => {
+          console.error(`Failed to create the chat`);
+          reject();
+        });
     });
   } else {
     console.error(`No token found`);
+    return Promise.reject();
   }
 }
 
 export function deleteChat(chatId: string) {
   const token = localStorage.getItem('token');
   if (token) {
-    return new Promise<void>((resolve) => {
+    return new Promise<void>((resolve, reject) => {
       axios({
         method: 'delete',
         url: `${axios.defaults.baseURL}/chat/delete/${chatId}`,
@@ -125,17 +139,21 @@ export function deleteChat(chatId: string) {
             throw new Error();
           }
         })
-        .catch(() => console.error(`Failed to delete the chat ${chatId}`));
+        .catch(() => {
+          console.error(`Failed to delete the chat ${chatId}`);
+          reject();
+        });
     });
   } else {
     console.error(`No token found`);
+    return Promise.reject();
   }
 }
 
 export function updateChat(chatId: string, newProps: Chat) {
   const token = localStorage.getItem('token');
   if (token) {
-    return new Promise<void>((resolve) => {
+    return new Promise<void>((resolve, reject) => {
       axios({
         method: 'post',
         url: `${axios.defaults.baseURL}/chat/update/${chatId}`,
@@ -152,9 +170,13 @@ export function updateChat(chatId: string, newProps: Chat) {
             throw new Error();
           }
         })
-        .catch(() => console.error(`Failed to delete the chat ${chatId}`));
+        .catch(() => {
+          console.error(`Failed to delete the chat ${chatId}`);
+          reject();
+        });
     });
   } else {
     console.error(`No token found`);
+    return Promise.reject();
   }
 }
