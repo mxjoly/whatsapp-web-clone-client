@@ -5,6 +5,7 @@ import { getUser, logoutUser, updateUser } from '../../../api/user';
 import { getChatsOfUser } from '../../../api/chat';
 import { getMessagesOnChat } from '../../../api/message';
 
+import { ThreeDots } from 'react-loader-spinner';
 import LeftPanel from '../../templates/LeftPanel';
 import RightPanel from '../../templates/RightPanel';
 import './styles.scss';
@@ -13,6 +14,7 @@ type MainProps = {};
 
 const Main = (props: MainProps): JSX.Element => {
   const navigate = useNavigate();
+  const [loading, setLoading] = React.useState(true);
 
   const [user, setUser] = React.useState<User>(null);
   const [chats, setChats] = React.useState<Chat[]>([]);
@@ -23,45 +25,65 @@ const Main = (props: MainProps): JSX.Element => {
   function loadData() {
     const userId = localStorage.getItem('userId');
 
-    getUser(userId)
-      .then((userData) => {
-        if (userData) {
-          setUser(userData);
-          if (userData.online === false) {
-            updateUser(userId, { ...userData, online: true });
+    const loadUserData = new Promise<void>((resolve, reject) => {
+      getUser(userId)
+        .then((userData) => {
+          if (userData) {
+            setUser(userData);
+            if (userData.online === false) {
+              updateUser(userId, { ...userData, online: true }).then(() => {
+                resolve();
+              });
+            } else {
+              resolve();
+            }
           }
-        }
-      })
+        })
+        .catch(() => {
+          reject();
+        });
+    });
+
+    const loadChatData = new Promise<void>((resolve, reject) => {
+      getChatsOfUser(userId).then((chats) => {
+        setChats(chats);
+        let promises: Promise<Message[]>[] = [];
+
+        chats.forEach((chat) => {
+          promises.push(
+            new Promise<Message[]>((resolve, reject) => {
+              getMessagesOnChat(chat._id).then((messages) => resolve(messages));
+            })
+          );
+        });
+
+        Promise.all(promises)
+          .then((messages) => {
+            setMessages(messages.reduce((prev, cur) => prev.concat(cur), []));
+            resolve();
+          })
+          .catch((err) => {
+            console.error(err);
+            reject();
+          });
+      });
+    });
+
+    return Promise.all([loadUserData, loadChatData])
+      .then(() => {})
       .catch(() => {
         localStorage.clear();
         navigate('/login');
       });
-
-    getChatsOfUser(userId).then((chats) => {
-      setChats(chats);
-      let promises: Promise<Message[]>[] = [];
-
-      chats.forEach((chat) => {
-        promises.push(
-          new Promise<Message[]>((resolve, reject) => {
-            getMessagesOnChat(chat._id).then((messages) => resolve(messages));
-          })
-        );
-      });
-
-      Promise.all(promises)
-        .then((messages) => {
-          setMessages(messages.reduce((prev, cur) => prev.concat(cur), []));
-        })
-        .catch((err) => console.error(err));
-    });
   }
 
   React.useEffect(() => {
     if (!localStorage.getItem('userId') || !localStorage.getItem('token')) {
       navigate('/login');
     } else {
-      loadData();
+      loadData().then(() => {
+        setLoading(false);
+      });
     }
   }, [navigate]);
 
@@ -141,8 +163,18 @@ const Main = (props: MainProps): JSX.Element => {
     }
   };
 
-  if (!user) {
-    return <div className="main"></div>;
+  if (!user || loading) {
+    return (
+      <div className="main">
+        <ThreeDots
+          height="80"
+          width="80"
+          radius="9"
+          ariaLabel="three-dots-loading"
+          color="#00a884"
+        />
+      </div>
+    );
   }
 
   return (

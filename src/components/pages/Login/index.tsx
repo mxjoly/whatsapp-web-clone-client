@@ -3,6 +3,7 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../../../api/user';
 
+import { ThreeDots } from 'react-loader-spinner';
 import { ThemeContext } from '../../../contexts/ThemeContext';
 import FormLogin from '../../molecules/FormLogin';
 import './styles.scss';
@@ -10,14 +11,14 @@ import './styles.scss';
 type LoginProps = {};
 
 const Login = (props: LoginProps): JSX.Element => {
-  const [loaded, setLoaded] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
   const navigate = useNavigate();
 
   React.useEffect(() => {
     if (localStorage.getItem('userId') && localStorage.getItem('token')) {
       navigate('/home');
     }
-    setLoaded(true);
+    setLoading(false);
   }, [navigate]);
 
   const handleLogin = (state: {
@@ -25,8 +26,10 @@ const Login = (props: LoginProps): JSX.Element => {
     phone: string;
     password: string;
   }) => {
+    setLoading(true);
     loginUser(state.username, state.password, state.phone).then(
       ({ token, userId }) => {
+        setLoading(false);
         navigate('/home');
         console.log({ token, userId });
         localStorage.setItem('userId', userId);
@@ -35,8 +38,18 @@ const Login = (props: LoginProps): JSX.Element => {
     );
   };
 
-  if (!loaded) {
-    return <div className="login"></div>;
+  if (loading) {
+    return (
+      <div className="login">
+        <ThreeDots
+          height="80"
+          width="80"
+          radius="9"
+          ariaLabel="three-dots-loading"
+          color="#00a884"
+        />
+      </div>
+    );
   }
 
   return (
