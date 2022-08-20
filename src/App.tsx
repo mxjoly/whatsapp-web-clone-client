@@ -11,27 +11,6 @@ import { MdOutlineWarning } from 'react-icons/md';
 type AppProps = {};
 
 const App = (props: AppProps): JSX.Element => {
-  // if (isMobile) {
-  //   return (
-  //     <ThemeContextProvider>
-  //       <ThemeContext.Consumer>
-  //         {({ isDark }) => (
-  //           <div className={`${isDark ? 'theme--dark' : 'theme--light'}`}>
-  //             <div className="app">
-  //               <div className="app__container">
-  //                 <MdOutlineWarning className="app__warningIcon" />
-  //                 <p className="app__info">
-  //                   Cette application est uniquement disponible sur ordinateur
-  //                 </p>
-  //               </div>
-  //             </div>
-  //           </div>
-  //         )}
-  //       </ThemeContext.Consumer>
-  //     </ThemeContextProvider>
-  //   );
-  // }
-
   return (
     <ThemeContextProvider>
       <ThemeContext.Consumer>
@@ -43,13 +22,22 @@ const App = (props: AppProps): JSX.Element => {
                 <div className="app__background app__background--bottom"></div>
               </div>
               <div className="app__container">
-                <BrowserRouter>
-                  <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/home" element={<Main />} />
-                    <Route path="*" element={<Navigate to="/login" />} />
-                  </Routes>
-                </BrowserRouter>
+                {isMobile ? (
+                  <>
+                    <MdOutlineWarning className="app__warningIcon" />
+                    <p className="app__info">
+                      Cette application est uniquement disponible sur ordinateur
+                    </p>
+                  </>
+                ) : (
+                  <BrowserRouter>
+                    <Routes>
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/home" element={<Main />} />
+                      <Route path="*" element={<Navigate to="/login" />} />
+                    </Routes>
+                  </BrowserRouter>
+                )}
               </div>
             </div>
           </div>

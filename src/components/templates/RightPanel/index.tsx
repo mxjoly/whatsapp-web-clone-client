@@ -23,6 +23,7 @@ const RightPanel = ({
   onCloseChat,
   onDeleteChat,
 }: RightPanelProps): JSX.Element => {
+  const [ready, setReady] = React.useState(false);
   const [displayContactInfo, setDisplayContactInfo] = React.useState(false);
 
   const platform =
@@ -63,12 +64,21 @@ const RightPanel = ({
           />
         </>
       ) : (
-        <div className="rightPanel__container">
+        <div
+          className={[
+            'rightPanel__container',
+            !ready && 'rightPanel__container--hide',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          style={{ opacity: ready ? 1 : 0 }}
+        >
           <ThemeContext.Consumer>
             {({ isDark }) => (
               <LazyLoadImage
                 alt="background"
                 className="rightPanel__image"
+                afterLoad={() => setReady(true)}
                 src={
                   isDark
                     ? './images/phone-laptop-dark.png'
