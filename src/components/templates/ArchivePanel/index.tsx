@@ -1,4 +1,8 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import * as chatApi from '../../../api/chat';
+import * as chatsAction from '../../../redux/chats/actions';
+import { RootState } from '../../../redux/rootReducer';
 
 import { MdArrowBack } from 'react-icons/md';
 import './styles.scss';
@@ -8,12 +12,8 @@ type ArchivePanelProps = {
   className?: string;
   onBack?: () => void;
   onSelectChat?: (chat: Chat) => void;
-  onDeleteChat?: (chatId: string) => void;
-  onUnarchiveChat?: (chatId: string) => void;
   isOpen: boolean;
   chatSelected: Chat;
-  chats: Chat[];
-  messages: Message[];
 };
 
 const ArchivePanel = ({
@@ -21,12 +21,13 @@ const ArchivePanel = ({
   isOpen,
   onBack,
   onSelectChat,
-  onDeleteChat,
-  onUnarchiveChat,
   chatSelected,
-  chats,
-  messages,
 }: ArchivePanelProps) => {
+  const dispatch = useDispatch();
+  const chats = useSelector<RootState, Chat[]>((state) =>
+    state.chats.chats.filter((chat) => chat.archived)
+  );
+
   const rootClasses = [
     'archivePanel',
     className,
@@ -42,15 +43,24 @@ const ArchivePanel = ({
   ];
 
   const onSelectChatMenuItems = (index: number, chatId: string) => {
-    switch (index) {
-      case 0:
-        onUnarchiveChat(chatId);
-        return;
-      case 1:
-        onDeleteChat(chatId);
-        return;
-      case 2:
-        return;
+    const chat = chats.find((chat) => chat._id === chatId);
+    if (chat) {
+      switch (index) {
+        case 0:
+          chatApi.updateChat(chatId, { ...chat, archived: false }).then(() => {
+            dispatch(
+              chatsAction.updateChat(chatId, { ...chat, archived: false })
+            );
+          });
+          return;
+        case 1:
+          chatApi.deleteChat(chatId).then(() => {
+            dispatch(chatsAction.deleteChat(chatId));
+          });
+          return;
+        case 2:
+          return;
+      }
     }
   };
 
@@ -63,7 +73,6 @@ const ArchivePanel = ({
       {chats.length > 0 ? (
         <ChatList
           chats={chats}
-          messages={messages}
           chatSelected={chatSelected}
           onSelectChat={onSelectChat}
           chatMenuItems={menuItems}

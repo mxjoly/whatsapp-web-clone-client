@@ -1,7 +1,8 @@
 import React from 'react';
 import { getDateLabel } from '../../../utils/date';
-import { getUser } from '../../../api/user';
-import { updateMessage } from '../../../api/message';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/rootReducer';
+import * as messageApi from '../../../api/message';
 
 import Avatar from '../../atoms/Avatar';
 import IconWithMenu from '../IconWithMenu';
@@ -16,7 +17,6 @@ type ChatItemProps = {
   archived: boolean;
   onSelectChat?: (chat: Chat) => void;
   active?: boolean;
-  messages: Message[];
   menuItems: string[];
   onSelectMenuItems: (index: number, chatId: string) => void;
 };
@@ -28,13 +28,21 @@ const ChatItem = ({
   picture,
   archived,
   active,
-  messages,
   menuItems,
   onSelectChat,
   onSelectMenuItems,
 }: ChatItemProps): JSX.Element => {
   const ref = React.useRef<HTMLDivElement>();
   const [hover, setHover] = React.useState(false);
+
+  const user = useSelector<RootState, User>((state) => state.user.user);
+  const contacts = useSelector<RootState, User[]>(
+    (state) => state.user.contacts
+  );
+  const messages = useSelector<RootState, Message[]>((state) =>
+    state.messages.messages.filter((msg) => msg.chatId === _id)
+  );
+
   const [otherParticipant, setOtherParticipant] = React.useState<User>(null);
   const [lastMessage, setLastMessage] = React.useState<Message>(null);
   const [nbMessagesNotRead, setNbMessagesNotRead] =
@@ -42,14 +50,12 @@ const ChatItem = ({
 
   React.useEffect(() => {
     const otherParticipantId =
-      localStorage.getItem('userId') === participants[0]
-        ? participants[1]
-        : participants[0];
+      user._id === participants[0] ? participants[1] : participants[0];
 
-    getUser(otherParticipantId).then((user) => {
-      setOtherParticipant(user);
-    });
-  }, [participants]);
+    setOtherParticipant(
+      contacts.find((contact) => contact._id === otherParticipantId)
+    );
+  }, [participants, contacts, user]);
 
   React.useEffect(() => {
     const getNumberMessagesNotRead = () =>
@@ -67,7 +73,7 @@ const ChatItem = ({
 
     setLastMessage(messages.slice(-1)[0]);
     setNbMessagesNotRead(getNumberMessagesNotRead());
-  }, [messages]);
+  }, []);
 
   const onClick = () => {
     onSelectChat({
@@ -87,7 +93,7 @@ const ChatItem = ({
           break;
         } else {
           messages[i].read.push(myId);
-          updateMessage(messages[i]._id, {
+          messageApi.updateMessage(messages[i]._id, {
             ...messages[i],
           });
         }

@@ -1,5 +1,10 @@
 import React from 'react';
-import { getUser } from '../../../api/user';
+import { useDispatch, useSelector } from 'react-redux';
+import * as chatApi from '../../../api/chat';
+import * as messageApi from '../../../api/message';
+import * as chatsActions from '../../../redux/chats/actions';
+import * as messagesActions from '../../../redux/messages/actions';
+import { RootState } from '../../../redux/rootReducer';
 
 import Avatar from '../../atoms/Avatar';
 import { MdMoreVert, MdOutlineSearch } from 'react-icons/md';
@@ -11,7 +16,6 @@ type ChatHeaderProps = {
   chat: Chat;
   onCloseChat?: (chatId: string) => void;
   onDeleteChat?: (chatId: string) => void;
-  onDeleteMessagesOnChat?: (chatId: string) => void;
   onDisplayContactInfo?: () => void;
 };
 
@@ -20,21 +24,26 @@ const ChatHeader = ({
   className,
   onCloseChat,
   onDeleteChat,
-  onDeleteMessagesOnChat,
   onDisplayContactInfo,
 }: ChatHeaderProps) => {
+  const dispatch = useDispatch();
+  const user = useSelector<RootState, User>((state) => state.user.user);
+  const contacts = useSelector<RootState, User[]>(
+    (state) => state.user.contacts
+  );
+
   const [otherParticipant, setOtherParticipant] = React.useState<User>(null);
 
   React.useEffect(() => {
     const otherParticipantId =
-      chat.participants[0] === localStorage.getItem('userId')
+      chat.participants[0] === user._id
         ? chat.participants[1]
         : chat.participants[0];
 
-    getUser(otherParticipantId).then((user) => {
-      setOtherParticipant(user);
-    });
-  }, [chat]);
+    setOtherParticipant(
+      contacts.find((contact) => contact._id === otherParticipantId)
+    );
+  }, [chat, contacts, user]);
 
   const onClickSearch = () => {};
 
@@ -53,10 +62,15 @@ const ChatHeader = ({
       case 4:
         return;
       case 5:
-        onDeleteMessagesOnChat(chat._id);
+        messageApi.deleteMessagesOnChat(chat._id).then(() => {
+          dispatch(messagesActions.deleteMessagesOnChat(chat._id));
+        });
         return;
       case 6:
-        onDeleteChat(chat._id);
+        chatApi.deleteChat(chat._id).then(() => {
+          dispatch(chatsActions.deleteChat(chat._id));
+          onDeleteChat(chat._id);
+        });
         return;
     }
   };

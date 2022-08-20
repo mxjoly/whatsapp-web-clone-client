@@ -1,5 +1,7 @@
 import React from 'react';
-import { getUser } from '../../../api/user';
+import { useSelector, useDispatch } from 'react-redux';
+import * as chatApi from '../../../api/chat';
+import * as chatsActions from '../../../redux/chats/actions';
 
 import { IconType } from 'react-icons';
 import {
@@ -15,6 +17,7 @@ import {
 } from 'react-icons/md';
 import Avatar from '../../atoms/Avatar';
 import './styles.scss';
+import { RootState } from '../../../redux/rootReducer';
 
 type ChatInfoPanelProps = {
   className?: string;
@@ -29,20 +32,33 @@ const ChatInfoPanel = ({
   onClose,
   onDeleteChat,
 }: ChatInfoPanelProps) => {
+  const dispatch = useDispatch();
+  const user = useSelector<RootState, User>((state) => state.user.user);
+  const contacts = useSelector<RootState, User[]>(
+    (state) => state.user.contacts
+  );
+
   const [otherParticipant, setOtherParticipant] = React.useState<User>(null);
 
   React.useEffect(() => {
     if (chat) {
       const otherParticipantId =
-        chat.participants[0] === localStorage.getItem('userId')
+        chat.participants[0] === user._id
           ? chat.participants[1]
           : chat.participants[0];
 
-      getUser(otherParticipantId).then((user) => {
-        setOtherParticipant(user);
-      });
+      setOtherParticipant(
+        contacts.find((contact) => contact._id === otherParticipantId)
+      );
     }
-  }, [chat]);
+  }, [chat, contacts, user]);
+
+  const handleDeleteChat = () => {
+    chatApi.deleteChat(chat._id).then(() => {
+      dispatch(chatsActions.deleteChat(chat._id));
+      onDeleteChat(chat._id);
+    });
+  };
 
   if (!chat || !otherParticipant) {
     return (
@@ -195,7 +211,7 @@ const ChatInfoPanel = ({
             className="chatInfoPanel__parameter"
             LeftIcon={MdDelete}
             label="Supprimer la discussion"
-            onClick={() => onDeleteChat(chat._id)}
+            onClick={handleDeleteChat}
             color="#f15c6d"
             hoverEffect
           />

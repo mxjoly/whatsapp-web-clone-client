@@ -1,19 +1,18 @@
 import React from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import {
-  getUser,
-  logoutUser,
-  updateUser,
-  getUserContacts,
-} from '../../../api/user';
-import { getChatsOfUser } from '../../../api/chat';
-import { deleteMessagesOnChat, getMessagesOnChat } from '../../../api/message';
+import { useDispatch, useStore } from 'react-redux';
+import * as userApi from '../../../api/user';
+import * as chatApi from '../../../api/chat';
+import * as messageApi from '../../../api/message';
+import * as userActions from '../../../redux/user/actions';
+import * as chatsActions from '../../../redux/chats/actions';
+import * as messagesActions from '../../../redux/messages/actions';
 
 import { ThreeDots } from 'react-loader-spinner';
 import LeftPanel from '../../templates/LeftPanel';
 import RightPanel from '../../templates/RightPanel';
 import './styles.scss';
+import { RootState } from '../../../redux/rootReducer';
 
 type MainProps = {};
 
@@ -23,21 +22,23 @@ const Main = (props: MainProps): JSX.Element => {
   const [chatVisible, setChatVisible] = React.useState<boolean>(false);
   const [chatSelected, setChatSelected] = React.useState<Chat | null>(null);
 
-  const [user, setUser] = React.useState<User>(null);
-  const [chats, setChats] = React.useState<Chat[]>([]);
-  const [messages, setMessages] = React.useState<Message[]>([]);
-  const [contacts, setContacts] = React.useState<User[]>([]);
+  // Redux
+  const dispatch = useDispatch();
+  const store = useStore<RootState>();
 
   function loadData() {
     const userId = localStorage.getItem('userId');
 
     const loadUserData = new Promise<void>((resolve, reject) => {
-      getUser(userId)
+      userApi
+        .getUser(userId)
         .then((userData) => {
           if (userData) {
-            setUser(userData);
+            dispatch(userActions.saveUser(userData));
             if (userData.online === false) {
-              updateUser(userId, { ...userData, online: true }).then(() => {
+              const newProps: User = { ...userData, online: true };
+              userApi.updateUser(userId, newProps).then(() => {
+                dispatch(userActions.loginUser());
                 resolve();
               });
             } else {
@@ -49,30 +50,37 @@ const Main = (props: MainProps): JSX.Element => {
     });
 
     const loadUserContacts = new Promise<void>((resolve, reject) => {
-      getUserContacts(userId)
+      userApi
+        .getUserContacts(userId)
         .then((users) => {
-          setContacts(users);
+          dispatch(userActions.saveContacts(users));
           resolve();
         })
         .catch(reject);
     });
 
     const loadChatData = new Promise<void>((resolve, reject) => {
-      getChatsOfUser(userId).then((chats) => {
-        setChats(chats);
+      chatApi.getChatsOfUser(userId).then((chats) => {
+        dispatch(chatsActions.saveChats(chats));
         let promises: Promise<Message[]>[] = [];
 
         chats.forEach((chat) => {
           promises.push(
             new Promise<Message[]>((resolve, reject) => {
-              getMessagesOnChat(chat._id).then((messages) => resolve(messages));
+              messageApi
+                .getMessagesOnChat(chat._id)
+                .then((messages) => resolve(messages));
             })
           );
         });
 
         Promise.all(promises)
           .then((messages) => {
-            setMessages(messages.reduce((prev, cur) => prev.concat(cur), []));
+            dispatch(
+              messagesActions.saveMessages(
+                messages.reduce((prev, cur) => prev.concat(cur), [])
+              )
+            );
             resolve();
           })
           .catch((err) => {
@@ -106,71 +114,25 @@ const Main = (props: MainProps): JSX.Element => {
       const userId = localStorage.getItem('userId');
       const token = localStorage.getItem('token');
       if (userId && token) {
-        logoutUser(userId);
+        userApi.logoutUser(userId);
       }
     }
     window.addEventListener('beforeunload', disconnect);
     return () => window.removeEventListener('beforeunload', disconnect);
-  }, [user]);
+  }, []);
 
   const handleChatSelection = (chatSelected: Chat) => {
+    const chats = store.getState().chats.chats;
     if (chatSelected) {
       let exists = chats.find((chat) => chat._id === chatSelected._id);
       if (exists) {
         setChatVisible(true);
         setChatSelected(chats.find((chat) => chat._id === chatSelected._id));
       } else {
-        setChats((chats) => [...chats, chatSelected]);
+        dispatch(chatsActions.addChat(chatSelected));
         setChatVisible(true);
         setChatSelected(chatSelected);
       }
-    }
-  };
-
-  const handleChatDelete = (chatId: string) => {
-    axios({
-      method: 'delete',
-      url: `${axios.defaults.baseURL}/chat/delete/${chatId}`,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          setChats((chats) => chats.filter((chat) => chat._id !== chatId));
-          console.log(`Chat ${chatId} deleted`);
-        }
-      })
-      .catch(() => console.error(`Failed to delete the chat ${chatId}`));
-  };
-
-  const handleChatArchive = (chatId: string, archived: boolean) => {
-    const chat = chats.find((chat) => chat._id === chatId);
-    if (chat) {
-      axios({
-        method: 'post',
-        url: `${axios.defaults.baseURL}/chat/update/${chatId}`,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        data: {
-          ...chat,
-          archived,
-        },
-      })
-        .then((res) => {
-          if (res.status === 200) {
-            setChats((chats) =>
-              chats.map((c) => (chat._id === c._id ? { ...c, archived } : c))
-            );
-            console.log(`Chat ${chat._id} updated`);
-          }
-        })
-        .catch(() => console.error(`Failed to update the chat ${chat._id}`));
-    } else {
-      console.error(
-        `Chat ${chat._id} cannot be updated because he has been not found`
-      );
     }
   };
 
@@ -181,15 +143,7 @@ const Main = (props: MainProps): JSX.Element => {
     }
   };
 
-  const handleDeleteMessagesOnChat = (chatId: string) => {
-    deleteMessagesOnChat(chatId).then(() => {
-      setMessages((messages) =>
-        messages.filter((msg) => msg.chatId !== chatId)
-      );
-    });
-  };
-
-  if (!user || loading) {
+  if (loading) {
     return (
       <div className="main">
         <ThreeDots
@@ -208,23 +162,14 @@ const Main = (props: MainProps): JSX.Element => {
       <LeftPanel
         className="main__leftPanel"
         onSelectChat={handleChatSelection}
-        onDeleteChat={handleChatDelete}
-        onArchiveChat={(chatId) => handleChatArchive(chatId, true)}
-        onUnarchiveChat={(chatId) => handleChatArchive(chatId, false)}
         chatSelected={chatSelected}
-        chats={chats}
-        user={user}
-        messages={messages}
-        contacts={contacts}
       />
       <RightPanel
         className="main__rightPanel"
         displayChat={chatVisible}
         chatSelected={chatSelected}
-        onDeleteChat={handleChatDelete}
         onCloseChat={handleCloseChat}
-        onDeleteMessageOnChat={handleDeleteMessagesOnChat}
-        messages={messages}
+        onDeleteChat={handleCloseChat}
       />
     </div>
   );

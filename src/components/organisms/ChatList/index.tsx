@@ -1,12 +1,13 @@
 import React from 'react';
 import dayjs from 'dayjs';
+import { useStore } from 'react-redux';
+import { RootState } from '../../../redux/rootReducer';
 
 import ChatItem from '../../molecules/ChatItem';
 import './styles.scss';
 
 type ChatListProps = {
   chats: Chat[];
-  messages: Message[];
   chatMenuItems: string[];
   onSelectChatMenuItems: (index: number, chatId: string) => void;
   onSelectChat?: (chat: Chat) => void;
@@ -15,14 +16,17 @@ type ChatListProps = {
 
 const ChatList = ({
   chats,
-  messages,
   chatSelected,
   onSelectChat,
   chatMenuItems,
   onSelectChatMenuItems,
 }: ChatListProps): JSX.Element => {
+  const store = useStore<RootState>();
+
   function findLastMessageChat(chat: Chat) {
-    const chatMessages = messages.filter((msg) => msg.chatId === chat._id);
+    const chatMessages = store
+      .getState()
+      .messages.messages.filter((msg) => msg.chatId === chat._id);
     return chatMessages
       .sort(
         (msg1, msg2) =>
@@ -33,7 +37,7 @@ const ChatList = ({
 
   return (
     <div className="chatList">
-      {chats
+      {[...chats]
         .sort((chat1, chat2) => {
           let lastMessageChat1 = findLastMessageChat(chat1);
           let lastMessageChat2 = findLastMessageChat(chat2);
@@ -54,7 +58,6 @@ const ChatList = ({
             onSelectMenuItems={onSelectChatMenuItems}
             menuItems={chatMenuItems}
             active={chatSelected !== null && chat._id === chatSelected._id}
-            messages={messages.filter((msg) => msg.chatId === chat._id)}
           />
         ))}
     </div>

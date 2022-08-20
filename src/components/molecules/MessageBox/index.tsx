@@ -1,6 +1,8 @@
 import React from 'react';
 import dayjs from 'dayjs';
-import { deleteMessage } from '../../../api/message';
+import { useDispatch } from 'react-redux';
+import * as messageApi from '../../../api/message';
+import * as messagesActions from '../../../redux/messages/actions';
 
 import { TbChevronDown } from 'react-icons/tb';
 import { MdDone } from 'react-icons/md';
@@ -22,6 +24,7 @@ const MessageBox = ({
   mine,
   read,
 }: MessageBoxProps) => {
+  const dispatch = useDispatch();
   const [hover, setHover] = React.useState(false);
 
   const onSelectMenu = (index: number) => {
@@ -35,7 +38,9 @@ const MessageBox = ({
       case 3:
         return;
       case 4:
-        deleteMessage(message._id);
+        messageApi.deleteMessage(message._id).then(() => {
+          dispatch(messagesActions.deleteMessage(message._id));
+        });
         return;
     }
   };

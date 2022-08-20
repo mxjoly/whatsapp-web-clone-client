@@ -1,5 +1,7 @@
 import React from 'react';
 import dayjs from 'dayjs';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/rootReducer';
 
 import MessageBox from '../../molecules/MessageBox';
 import DayBox from '../../atoms/DayBox';
@@ -7,15 +9,18 @@ import './styles.scss';
 
 type MessageViewProps = {
   className?: string;
-  messages: Message[];
+  chat: Chat;
 };
 
-const MessageView = ({ className, messages }: MessageViewProps) => {
+const MessageView = ({ className, chat }: MessageViewProps) => {
   const ref = React.useRef<HTMLDivElement>();
-  const myId = localStorage.getItem('userId');
+  const user = useSelector<RootState, User>((state) => state.user.user);
+  let messages = useSelector<RootState, Message[]>((state) =>
+    state.messages.messages.filter((msg) => msg.chatId === chat._id)
+  );
 
   if (messages.length > 1) {
-    messages = messages.sort(
+    messages = [...messages].sort(
       (msg1, msg2) => msg1.createdAt.valueOf() - msg2.createdAt.valueOf()
     );
   }
@@ -52,7 +57,7 @@ const MessageView = ({ className, messages }: MessageViewProps) => {
               <div
                 className={[
                   'messageView__row',
-                  message.senderId === myId
+                  message.senderId === user._id
                     ? 'messageView__row--right'
                     : 'messageView__row--left',
                 ].join(' ')}
@@ -60,15 +65,17 @@ const MessageView = ({ className, messages }: MessageViewProps) => {
                 <MessageBox
                   className={[
                     'messageView__message',
-                    message.senderId === myId
+                    message.senderId === user._id
                       ? 'messageView__message--right'
                       : 'messageView__message--left',
                   ].join(' ')}
                   message={message}
                   side={
-                    message.senderId === myId ? 'right-bottom' : 'left-bottom'
+                    message.senderId === user._id
+                      ? 'right-bottom'
+                      : 'left-bottom'
                   }
-                  mine={message.senderId === myId}
+                  mine={message.senderId === user._id}
                   read={message.read.length > 1} // Need  to be improved
                 />
               </div>

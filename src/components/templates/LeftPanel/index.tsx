@@ -1,6 +1,9 @@
 import React from 'react';
-import { createChat } from '../../../api/chat';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../../../redux/rootReducer';
 import { mongoObjectId } from '../../../utils/id';
+import * as chatApi from '../../../api/chat';
+import * as chatsActions from '../../../redux/chats/actions';
 
 import UserPanel from '../UserPanel';
 import Header from '../../organisms/LeftPanelHeader';
@@ -15,30 +18,23 @@ import './styles.scss';
 type LeftPanelProps = {
   className?: string;
   onSelectChat?: (chat: Chat) => void;
-  onDeleteChat?: (chatId: string) => void;
-  onArchiveChat?: (chatId: string) => void;
-  onUnarchiveChat?: (chatId: string) => void;
   chatSelected?: Chat;
-  chats: Chat[];
-  user: User;
-  messages: Message[];
-  contacts: User[];
 };
 
 const LeftPanel = ({
   className,
   onSelectChat,
-  onDeleteChat,
-  onArchiveChat,
-  onUnarchiveChat,
   chatSelected,
-  chats,
-  user,
-  messages,
-  contacts,
 }: LeftPanelProps): JSX.Element => {
   const [ready, setReady] = React.useState(true);
   const [search, setSearch] = React.useState<string>('');
+
+  const dispatch = useDispatch();
+  const chats = useSelector<RootState, Chat[]>((state) => state.chats.chats);
+  const user = useSelector<RootState, User>((state) => state.user.user);
+  const contacts = useSelector<RootState, User[]>(
+    (state) => state.user.contacts
+  );
 
   const [displayUserInfo, setDisplayUserInfo] = React.useState(false);
   const [displayArchivePanel, setDisplayArchivePanel] = React.useState(false);
@@ -54,7 +50,7 @@ const LeftPanel = ({
       setDisplayNotificationPanel(false);
     }
     setReady(true);
-  }, [displayNotificationPanel]);
+  }, [displayNotificationPanel, chats]);
 
   const handleCloseNotificationPanel = () => {
     localStorage.setItem('displayNotificationPanel', 'true');
@@ -71,16 +67,18 @@ const LeftPanel = ({
       onSelectChat(chat);
       setDisplayNewChatPanel(false);
     } else {
-      createChat({
-        _id: mongoObjectId(),
-        archived: false,
-        participants: [user._id, userId],
-        title: '',
-        picture: '',
-      }).then((chat) => {
-        onSelectChat(chat);
-        setDisplayNewChatPanel(false);
-      });
+      chatApi
+        .createChat({
+          _id: mongoObjectId(),
+          archived: false,
+          participants: [user._id, userId],
+          title: '',
+          picture: '',
+        })
+        .then((chat) => {
+          onSelectChat(chat);
+          setDisplayNewChatPanel(false);
+        });
     }
   };
 
@@ -97,23 +95,17 @@ const LeftPanel = ({
         ]
           .filter(Boolean)
           .join(' ')}
-        user={user}
         onBack={() => setDisplayUserInfo(false)}
         isOpen={displayUserInfo}
       />
       <ArchivePanel
-        chats={chats.filter((chat) => chat.archived)}
-        messages={messages}
         isOpen={displayArchivePanel}
         onBack={() => setDisplayArchivePanel(false)}
         chatSelected={chatSelected}
         onSelectChat={onSelectChat}
-        onDeleteChat={onDeleteChat}
-        onUnarchiveChat={onUnarchiveChat}
       />
       <NewChatPanel
         isOpen={displayNewChatPanel}
-        users={contacts}
         onSelectUser={handleSelectUser}
         onBack={() => setDisplayNewChatPanel(false)}
       />
@@ -121,7 +113,6 @@ const LeftPanel = ({
         onClickAvatar={() => setDisplayUserInfo(true)}
         onClickChat={() => setDisplayNewChatPanel(true)}
         onClickData={() => null}
-        user={user}
       />
       {displayNotificationPanel && (
         <NotificationPanel
@@ -135,31 +126,31 @@ const LeftPanel = ({
         onClick={() => setDisplayArchivePanel(true)}
       />
       <ChatList
-        chats={chats.filter((chat) => {
-          // If it's a group, the title of chat is the title props, else it's
-          // the username of the other participants
-          if (chat.participants.length > 2) {
-            return (
-              chat.title.toUpperCase().indexOf(search.toUpperCase()) > -1 &&
-              !chat.archived
-            );
-          } else {
-            const otherParticipantId =
-              chat.participants[0] === user._id
-                ? chat.participants[1]
-                : chat.participants[0];
+        chats={chats
+          .filter((chat) => !chat.archived)
+          .filter((chat) => {
+            // If it's a group, the title of chat is the title props, else it's
+            // the username of the other participants
+            if (chat.participants.length > 2) {
+              return (
+                chat.title.toUpperCase().indexOf(search.toUpperCase()) > -1
+              );
+            } else {
+              const otherParticipantId =
+                chat.participants[0] === user._id
+                  ? chat.participants[1]
+                  : chat.participants[0];
 
-            const otherParticipant = contacts.find(
-              (contact) => contact._id === otherParticipantId
-            );
-            return (
-              otherParticipant.username
-                .toUpperCase()
-                .indexOf(search.toUpperCase()) > -1 && !chat.archived
-            );
-          }
-        })}
-        messages={messages}
+              const otherParticipant = contacts.find(
+                (contact) => contact._id === otherParticipantId
+              );
+              return (
+                otherParticipant.username
+                  .toUpperCase()
+                  .indexOf(search.toUpperCase()) > -1
+              );
+            }
+          })}
         onSelectChat={onSelectChat}
         chatSelected={chatSelected}
         chatMenuItems={[
@@ -170,14 +161,23 @@ const LeftPanel = ({
           'Marquer comme non lu',
         ]}
         onSelectChatMenuItems={(index, chatId) => {
+          const chat = chats.find((chat) => chat._id === chatId);
           switch (index) {
             case 0:
-              onArchiveChat(chatId);
+              chatApi
+                .updateChat(chatId, { ...chat, archived: true })
+                .then(() => {
+                  dispatch(
+                    chatsActions.updateChat(chatId, { ...chat, archived: true })
+                  );
+                });
               return;
             case 1:
               return;
             case 2:
-              onDeleteChat(chatId);
+              chatApi.deleteChat(chatId).then(() => {
+                dispatch(chatsActions.deleteChat(chatId));
+              });
               return;
             case 3:
               return;

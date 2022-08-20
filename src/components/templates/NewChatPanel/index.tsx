@@ -1,16 +1,17 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 
 import { MdArrowBack } from 'react-icons/md';
 import SearchBarPanel from '../../organisms/SearchBarPanel';
 import UserList from '../../organisms/UserList';
 import './styles.scss';
+import { RootState } from '../../../redux/rootReducer';
 
 type NewChatPanelProps = {
   className?: string;
   onBack?: () => void;
   onSelectUser?: (userId: string) => void;
   isOpen: boolean;
-  users: User[];
 };
 
 const NewChatPanel = ({
@@ -18,9 +19,11 @@ const NewChatPanel = ({
   isOpen,
   onBack,
   onSelectUser,
-  users,
 }: NewChatPanelProps) => {
   const [search, setSearch] = React.useState('');
+  const contacts = useSelector<RootState, User[]>(
+    (state) => state.user.contacts
+  );
 
   const rootClasses = [
     'newChatPanel',
@@ -37,9 +40,9 @@ const NewChatPanel = ({
         <span className="newChatPanel__header__title">Nouvelle discussion</span>
       </div>
       <SearchBarPanel onChangeSearch={setSearch} />
-      {users.length > 0 ? (
+      {contacts.length > 0 ? (
         <UserList
-          users={users.filter(
+          users={contacts.filter(
             (user) =>
               user.username.toUpperCase().indexOf(search.toUpperCase()) > -1
           )}

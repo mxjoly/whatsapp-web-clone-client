@@ -1,6 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { logoutUser } from '../../../api/user';
+import { useDispatch, useSelector } from 'react-redux';
+import * as apiUser from '../../../api/user';
+import * as userActions from '../../../redux/user/actions';
+import { RootState } from '../../../redux/rootReducer';
 
 import { MdDataUsage, MdMoreVert, MdChat } from 'react-icons/md';
 import IconWithMenu from '../../molecules/IconWithMenu';
@@ -12,7 +15,6 @@ type LeftPanelHeaderProps = {
   onClickAvatar?: () => void;
   onClickData?: () => void;
   onClickChat?: () => void;
-  user: User;
 };
 
 const LeftPanelHeader = ({
@@ -20,9 +22,10 @@ const LeftPanelHeader = ({
   onClickAvatar,
   onClickChat,
   onClickData,
-  user,
 }: LeftPanelHeaderProps): JSX.Element => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector<RootState, User>((state) => state.user.user);
 
   const handleSelectMenuItem = (index: number) => {
     switch (index) {
@@ -33,7 +36,8 @@ const LeftPanelHeader = ({
       case 2:
         return;
       case 3:
-        logoutUser(localStorage.getItem('userId')).then(() => {
+        apiUser.logoutUser(user._id).then(() => {
+          dispatch(userActions.logoutUser());
           navigate('/login');
           localStorage.clear();
         });

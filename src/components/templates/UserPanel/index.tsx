@@ -1,4 +1,6 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/rootReducer';
 import { updateUser } from '../../../api/user';
 
 import { MdArrowBack, MdEdit } from 'react-icons/md';
@@ -7,12 +9,12 @@ import './styles.scss';
 
 type UserPanelProps = {
   className?: string;
-  user: User;
   onBack?: () => void;
   isOpen: boolean;
 };
 
-const UserPanel = ({ className, user, onBack, isOpen }: UserPanelProps) => {
+const UserPanel = ({ className, onBack, isOpen }: UserPanelProps) => {
+  const user = useSelector<RootState, User>((state) => state.user.user);
   const [username, setUsername] = React.useState(user.username);
   const [status, setStatus] = React.useState(user.profile.status);
   const usernameInputRef = React.useRef<HTMLInputElement>();

@@ -1,7 +1,9 @@
 import React from 'react';
 import dayjs from 'dayjs';
+import { useDispatch } from 'react-redux';
 import { mongoObjectId } from '../../../utils/id';
 import { createMessage } from '../../../api/message';
+import { addMessage } from '../../../redux/messages/actions';
 
 import ChatHeader from '../ChatHeader';
 import ChatFooter from '../ChatFooter';
@@ -11,29 +13,25 @@ import './styles.scss';
 type ChatViewProps = {
   className?: string;
   chat: Chat;
-  messages: Message[];
   onCloseChat?: (chatId: string) => void;
   onDeleteChat?: (chatId: string) => void;
-  onDeleteMessagesOnChat?: (chatId: string) => void;
   onDisplayContactInfo?: () => void;
 };
 
 const ChatView = ({
   className,
   chat,
-  messages,
   onCloseChat,
   onDeleteChat,
-  onDeleteMessagesOnChat,
   onDisplayContactInfo,
 }: ChatViewProps): JSX.Element => {
-  const sendMessage = (messageContent: MessageContent) => {
-    createMessage({
+  const dispatch = useDispatch();
+
+  const handleSendMessage = (messageContent: MessageContent) => {
+    const message: Message = {
       _id: mongoObjectId(),
       chatId: chat._id,
-      content: {
-        ...messageContent,
-      },
+      content: { ...messageContent },
       createdAt: dayjs().toDate(),
       senderId: localStorage.getItem('userId'),
       read: [],
@@ -43,6 +41,10 @@ const ChatView = ({
           : messageContent.pictureUrl !== ''
           ? 'IMAGE'
           : 'AUDIO',
+    };
+
+    createMessage(message).then(() => {
+      dispatch(addMessage(message));
     });
   };
 
@@ -54,10 +56,12 @@ const ChatView = ({
         onCloseChat={onCloseChat}
         onDeleteChat={onDeleteChat}
         onDisplayContactInfo={onDisplayContactInfo}
-        onDeleteMessagesOnChat={onDeleteMessagesOnChat}
       />
-      <MessageView messages={messages} />
-      <ChatFooter className="chatView__footer" onSendClick={sendMessage} />
+      <MessageView chat={chat} />
+      <ChatFooter
+        className="chatView__footer"
+        onSendClick={handleSendMessage}
+      />
     </div>
   );
 };

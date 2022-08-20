@@ -5,6 +5,8 @@ import './index.scss';
 
 import reportWebVitals from './reportWebVitals';
 import axios from 'axios';
+import store from './redux/store';
+import { Provider } from 'react-redux';
 
 axios.defaults.baseURL =
   process.env.NODE_ENV === 'development'
@@ -16,7 +18,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </React.StrictMode>
 );
 

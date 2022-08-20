@@ -165,14 +165,14 @@ export function updateChat(chatId: string, newProps: Chat) {
       })
         .then((res) => {
           if (res.status === 200) {
-            console.log(`Chat ${chatId} deleted successfully`);
+            console.log(`Chat ${chatId} updated successfully`);
             resolve();
           } else {
             throw new Error();
           }
         })
         .catch(() => {
-          console.error(`Failed to delete the chat ${chatId}`);
+          console.error(`Failed to update the chat ${chatId}`);
           reject();
         });
     });
