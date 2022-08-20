@@ -1,8 +1,9 @@
 import React from 'react';
 import { getDateLabel } from '../../../utils/date';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../redux/rootReducer';
 import * as messageApi from '../../../api/message';
+import * as messagesAction from '../../../redux/messages/actions';
 
 import Avatar from '../../atoms/Avatar';
 import IconWithMenu from '../IconWithMenu';
@@ -35,6 +36,7 @@ const ChatItem = ({
   const ref = React.useRef<HTMLDivElement>();
   const [hover, setHover] = React.useState(false);
 
+  const dispatch = useDispatch();
   const user = useSelector<RootState, User>((state) => state.user.user);
   const contacts = useSelector<RootState, User[]>(
     (state) => state.user.contacts
@@ -44,9 +46,6 @@ const ChatItem = ({
   );
 
   const [otherParticipant, setOtherParticipant] = React.useState<User>(null);
-  const [lastMessage, setLastMessage] = React.useState<Message>(null);
-  const [nbMessagesNotRead, setNbMessagesNotRead] =
-    React.useState<number>(null);
 
   React.useEffect(() => {
     const otherParticipantId =
@@ -57,23 +56,20 @@ const ChatItem = ({
     );
   }, [participants, contacts, user]);
 
-  React.useEffect(() => {
-    const getNumberMessagesNotRead = () =>
-      messages.reduce((number, message) => {
-        const myId = localStorage.getItem('userId');
-        if (
-          // Check if the user id is on the array
-          message.read.findIndex((userId) => userId === myId) !== -1 ||
-          // You are the sender of the message
-          message.senderId === myId
-        )
-          return number;
-        else return number + 1;
-      }, 0);
+  const getNumberMessagesNotRead = () =>
+    messages.reduce((number, message) => {
+      if (
+        // Check if the user id is on the array
+        message.read.findIndex((userId) => userId === user._id) !== -1 ||
+        // You are the sender of the message
+        message.senderId === user._id
+      )
+        return number;
+      else return number + 1;
+    }, 0);
 
-    setLastMessage(messages.slice(-1)[0]);
-    setNbMessagesNotRead(getNumberMessagesNotRead());
-  }, []);
+  const lastMessage = messages.slice(-1)[0];
+  const nbMessageNotRead = getNumberMessagesNotRead();
 
   const onClick = () => {
     onSelectChat({
@@ -83,19 +79,27 @@ const ChatItem = ({
       picture,
       archived,
     });
-    if (nbMessagesNotRead > 0) {
-      const myId = localStorage.getItem('userId');
+    if (nbMessageNotRead > 0) {
       for (let i = messages.length - 1; i >= 0; i--) {
         let isRead =
-          messages[i].read.findIndex((userId) => userId === myId) > -1;
-        let isOthers = messages[i].senderId !== myId;
+          messages[i].read.findIndex((userId) => userId === user._id) > -1;
+        let isOthers = messages[i].senderId !== user._id;
         if (isRead && isOthers) {
           break;
         } else {
-          messages[i].read.push(myId);
-          messageApi.updateMessage(messages[i]._id, {
-            ...messages[i],
-          });
+          messageApi
+            .updateMessage(messages[i]._id, {
+              ...messages[i],
+              read: [...messages[i].read, user._id],
+            })
+            .then(() => {
+              dispatch(
+                messagesAction.updateMessage(messages[i]._id, {
+                  ...messages[i],
+                  read: [...messages[i].read, user._id],
+                })
+              );
+            });
         }
       }
     }
@@ -138,7 +142,7 @@ const ChatItem = ({
           <div
             className={[
               'chatItem__date',
-              nbMessagesNotRead > 0 && 'chatItem__date--colored',
+              nbMessageNotRead > 0 && 'chatItem__date--colored',
             ]
               .filter(Boolean)
               .join(' ')}
@@ -152,8 +156,8 @@ const ChatItem = ({
               ? lastMessage.content.text
               : otherParticipant.profile.status}
           </span>
-          {nbMessagesNotRead > 0 ? (
-            <div className="chatItem__badge">{nbMessagesNotRead}</div>
+          {nbMessageNotRead > 0 ? (
+            <div className="chatItem__badge">{nbMessageNotRead}</div>
           ) : (
             <IconWithMenu
               iconClassName={[

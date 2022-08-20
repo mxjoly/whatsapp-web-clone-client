@@ -168,9 +168,9 @@ export function loginUser(username: string, password: string, phone: string) {
       method: 'post',
       url: `${axios.defaults.baseURL}/user/login`,
       data: {
-        password: 'password',
-        username: username,
-        phone: phone,
+        password,
+        username,
+        phone,
       },
     })
       .then((res) => {

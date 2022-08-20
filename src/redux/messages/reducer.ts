@@ -48,15 +48,15 @@ const reducer = (
       }
 
       case ActionTypes.UPDATE_MESSAGE: {
-        let message = draft.messages.find(
-          (message) => message._id === action.payload.messageId
-        );
-        if (message) {
-          message = {
-            ...message,
-            ...action.payload.props,
-          };
-        }
+        draft.messages = draft.messages.map((message) => {
+          if (message._id === action.payload.messageId) {
+            return {
+              ...message,
+              ...action.payload.props,
+            };
+          }
+          return message;
+        });
         return;
       }
     }

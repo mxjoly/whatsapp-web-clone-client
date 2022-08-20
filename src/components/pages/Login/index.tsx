@@ -27,15 +27,17 @@ const Login = (props: LoginProps): JSX.Element => {
     password: string;
   }) => {
     setLoading(true);
-    loginUser(state.username, state.password, state.phone).then(
-      ({ token, userId }) => {
+    loginUser(state.username, state.password, state.phone)
+      .then(({ token, userId }) => {
         setLoading(false);
         navigate('/home');
         console.log({ token, userId });
         localStorage.setItem('userId', userId);
         localStorage.setItem('token', token);
-      }
-    );
+      })
+      .catch(() => {
+        setLoading(false);
+      });
   };
 
   if (loading) {
