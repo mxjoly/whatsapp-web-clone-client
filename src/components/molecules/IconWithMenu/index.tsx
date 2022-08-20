@@ -70,7 +70,9 @@ const IconWithMenu = ({
             ? 'iconWithMenu__menu--rightBottom'
             : menuPlacement === 'right-top'
             ? 'iconWithMenu__menu--rightTop'
-            : 'iconWithMenu__menu--leftTop',
+            : menuPlacement === 'left-top'
+            ? 'iconWithMenu__menu--leftTop'
+            : 'iconWithMenu__menu--leftBottom',
         ]
           .filter(Boolean)
           .join(' ')}
