@@ -1,6 +1,6 @@
 # WhatsApp Web Clone (Client)
 
-This is a clone of the WhatsApp web application developed in [React](https://reactjs.org/) with [Meteor](https://www.meteor.com/).
+This is a clone of the WhatsApp web application developed in [React](https://reactjs.org/)
 
 ## Technical Stack
 
@@ -8,6 +8,8 @@ This is a clone of the WhatsApp web application developed in [React](https://rea
 - 🔥 Typescript 4
 - 🔥 Express 4
 - 🔥 Mongo DB
+- ✅ Socket.io
+- ✅ Redux
 - ✅ SASS
 - ✅ React Router 6
 
