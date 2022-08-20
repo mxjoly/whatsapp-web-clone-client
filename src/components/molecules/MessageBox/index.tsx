@@ -12,9 +12,16 @@ type MessageBoxProps = {
   message: Message;
   side: 'left-bottom' | 'right-bottom' | 'left-top' | 'right-top';
   mine?: boolean; // Is it your message ?
+  read?: boolean;
 };
 
-const MessageBox = ({ className, message, side, mine }: MessageBoxProps) => {
+const MessageBox = ({
+  className,
+  message,
+  side,
+  mine,
+  read,
+}: MessageBoxProps) => {
   const [hover, setHover] = React.useState(false);
 
   const onSelectMenu = (index: number) => {
@@ -65,9 +72,11 @@ const MessageBox = ({ className, message, side, mine }: MessageBoxProps) => {
           <span className="messageBox__date">
             {dayjs(message.createdAt).format('HH:mm')}
           </span>
-          {/* {message.read.length > 0 && mine && (
-            <MdDone className="messageBox__done" />
-          )} */}
+          {read && mine ? (
+            <MdDone className="messageBox__readStatus messageBox__readStatus--done" />
+          ) : !read && mine ? (
+            <MdDone className="messageBox__readStatus" />
+          ) : null}
         </div>
       </div>
     </div>

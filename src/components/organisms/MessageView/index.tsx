@@ -68,6 +68,8 @@ const MessageView = ({ className, messages }: MessageViewProps) => {
                   side={
                     message.senderId === myId ? 'right-bottom' : 'left-bottom'
                   }
+                  mine={message.senderId === myId}
+                  read={message.read.length > 1} // Need  to be improved
                 />
               </div>
             );
