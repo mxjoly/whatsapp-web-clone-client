@@ -1,9 +1,14 @@
 import React from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { getUser, logoutUser, updateUser } from '../../../api/user';
+import {
+  getUser,
+  logoutUser,
+  updateUser,
+  getUserContacts,
+} from '../../../api/user';
 import { getChatsOfUser } from '../../../api/chat';
-import { getMessagesOnChat } from '../../../api/message';
+import { deleteMessagesOnChat, getMessagesOnChat } from '../../../api/message';
 
 import { ThreeDots } from 'react-loader-spinner';
 import LeftPanel from '../../templates/LeftPanel';
@@ -15,12 +20,13 @@ type MainProps = {};
 const Main = (props: MainProps): JSX.Element => {
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(true);
+  const [chatVisible, setChatVisible] = React.useState<boolean>(false);
+  const [chatSelected, setChatSelected] = React.useState<Chat | null>(null);
 
   const [user, setUser] = React.useState<User>(null);
   const [chats, setChats] = React.useState<Chat[]>([]);
   const [messages, setMessages] = React.useState<Message[]>([]);
-  const [chatVisible, setChatVisible] = React.useState<boolean>(false);
-  const [chatSelected, setChatSelected] = React.useState<Chat | null>(null);
+  const [contacts, setContacts] = React.useState<User[]>([]);
 
   function loadData() {
     const userId = localStorage.getItem('userId');
@@ -39,9 +45,16 @@ const Main = (props: MainProps): JSX.Element => {
             }
           }
         })
-        .catch(() => {
-          reject();
-        });
+        .catch(reject);
+    });
+
+    const loadUserContacts = new Promise<void>((resolve, reject) => {
+      getUserContacts(userId)
+        .then((users) => {
+          setContacts(users);
+          resolve();
+        })
+        .catch(reject);
     });
 
     const loadChatData = new Promise<void>((resolve, reject) => {
@@ -69,7 +82,7 @@ const Main = (props: MainProps): JSX.Element => {
       });
     });
 
-    return Promise.all([loadUserData, loadChatData])
+    return Promise.all([loadUserData, loadUserContacts, loadChatData])
       .then(() => {})
       .catch(() => {
         localStorage.clear();
@@ -100,30 +113,35 @@ const Main = (props: MainProps): JSX.Element => {
     return () => window.removeEventListener('beforeunload', disconnect);
   }, [user]);
 
-  const handleChatSelection = (chatId: string) => {
-    if (chatId) {
-      setChatVisible(true);
-      setChatSelected(chats.find((chat) => chat._id === chatId));
+  const handleChatSelection = (chatSelected: Chat) => {
+    if (chatSelected) {
+      let exists = chats.find((chat) => chat._id === chatSelected._id);
+      if (exists) {
+        setChatVisible(true);
+        setChatSelected(chats.find((chat) => chat._id === chatSelected._id));
+      } else {
+        setChats((chats) => [...chats, chatSelected]);
+        setChatVisible(true);
+        setChatSelected(chatSelected);
+      }
     }
   };
 
   const handleChatDelete = (chatId: string) => {
-    if (chatSelected._id === chatId && chatVisible) {
-      axios({
-        method: 'delete',
-        url: `${axios.defaults.baseURL}/chat/delete/${chatId}`,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
+    axios({
+      method: 'delete',
+      url: `${axios.defaults.baseURL}/chat/delete/${chatId}`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          setChats((chats) => chats.filter((chat) => chat._id !== chatId));
+          console.log(`Chat ${chatId} deleted`);
+        }
       })
-        .then((res) => {
-          if (res.status === 200) {
-            setChats((chats) => chats.filter((chat) => chat._id !== chatId));
-            console.log(`Chat ${chatId} deleted`);
-          }
-        })
-        .catch(() => console.error(`Failed to delete the chat ${chatId}`));
-    }
+      .catch(() => console.error(`Failed to delete the chat ${chatId}`));
   };
 
   const handleChatArchive = (chatId: string, archived: boolean) => {
@@ -163,6 +181,14 @@ const Main = (props: MainProps): JSX.Element => {
     }
   };
 
+  const handleDeleteMessagesOnChat = (chatId: string) => {
+    deleteMessagesOnChat(chatId).then(() => {
+      setMessages((messages) =>
+        messages.filter((msg) => msg.chatId !== chatId)
+      );
+    });
+  };
+
   if (!user || loading) {
     return (
       <div className="main">
@@ -189,6 +215,7 @@ const Main = (props: MainProps): JSX.Element => {
         chats={chats}
         user={user}
         messages={messages}
+        contacts={contacts}
       />
       <RightPanel
         className="main__rightPanel"
@@ -196,6 +223,7 @@ const Main = (props: MainProps): JSX.Element => {
         chatSelected={chatSelected}
         onDeleteChat={handleChatDelete}
         onCloseChat={handleCloseChat}
+        onDeleteMessageOnChat={handleDeleteMessagesOnChat}
         messages={messages}
       />
     </div>

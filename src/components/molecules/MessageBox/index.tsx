@@ -10,11 +10,11 @@ import './styles.scss';
 type MessageBoxProps = {
   className?: string;
   message: Message;
-  side: 'left' | 'right';
+  side: 'left-bottom' | 'right-bottom' | 'left-top' | 'right-top';
   mine?: boolean; // Is it your message ?
 };
 
-const MessageBox = ({ className, message, side }: MessageBoxProps) => {
+const MessageBox = ({ className, message, side, mine }: MessageBoxProps) => {
   const [hover, setHover] = React.useState(false);
 
   const onSelectMenu = (index: number) => {
@@ -56,17 +56,18 @@ const MessageBox = ({ className, message, side }: MessageBoxProps) => {
             'Marquer comme important',
             'Supprimer le message',
           ]}
-          menuPlacement={side === 'left' ? 'right' : 'left'}
+          menuPlacement={
+            side === 'left-bottom' ? 'right-bottom' : 'left-bottom'
+          }
           onSelectMenuItem={onSelectMenu}
         />
         <div className="messageBox__footer">
           <span className="messageBox__date">
             {dayjs(message.createdAt).format('HH:mm')}
           </span>
-          {message.read.length > 0 &&
-            message.senderId === localStorage.getItem('userId') && (
-              <MdDone className="messageBox__done" />
-            )}
+          {/* {message.read.length > 0 && mine && (
+            <MdDone className="messageBox__done" />
+          )} */}
         </div>
       </div>
     </div>

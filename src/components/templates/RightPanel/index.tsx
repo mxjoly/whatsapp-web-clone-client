@@ -14,6 +14,7 @@ type RightPanelProps = {
   chatSelected?: Chat;
   onCloseChat?: (chatId: string) => void;
   onDeleteChat?: (chatId: string) => void;
+  onDeleteMessageOnChat?: (chatId: string) => void;
   messages: Message[];
 };
 
@@ -24,6 +25,7 @@ const RightPanel = ({
   messages,
   onCloseChat,
   onDeleteChat,
+  onDeleteMessageOnChat,
 }: RightPanelProps): JSX.Element => {
   const [displayContactInfo, setDisplayContactInfo] = React.useState(false);
 
@@ -55,6 +57,7 @@ const RightPanel = ({
             chat={chatSelected}
             onCloseChat={onCloseChat}
             onDeleteChat={handleDeleteChat}
+            onDeleteMessagesOnChat={onDeleteMessageOnChat}
             onDisplayContactInfo={() => setDisplayContactInfo(true)}
             messages={messages.filter((msg) => msg.chatId === chatSelected._id)}
           />

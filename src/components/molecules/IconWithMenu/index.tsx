@@ -9,7 +9,7 @@ type IconWithMenuProps = {
   menuItemClassName?: string;
   menuItems: string[];
   onSelectMenuItem?: (index: number) => void;
-  menuPlacement?: 'right' | 'left';
+  menuPlacement?: 'right-bottom' | 'left-bottom' | 'right-top' | 'left-top';
   useHoverColor?: boolean;
 };
 
@@ -64,11 +64,13 @@ const IconWithMenu = ({
           'iconWithMenu__menu',
           menuClassName,
           menuHidden && 'iconWithMenu__menu--hide',
-          menuPlacement === 'left'
-            ? 'iconWithMenu__menu--left'
-            : menuPlacement === 'right'
-            ? 'iconWithMenu__menu--right'
-            : 'iconWithMenu__menu--left',
+          menuPlacement === 'left-bottom'
+            ? 'iconWithMenu__menu--leftBottom'
+            : menuPlacement === 'right-bottom'
+            ? 'iconWithMenu__menu--rightBottom'
+            : menuPlacement === 'right-top'
+            ? 'iconWithMenu__menu--rightTop'
+            : 'iconWithMenu__menu--leftTop',
         ]
           .filter(Boolean)
           .join(' ')}

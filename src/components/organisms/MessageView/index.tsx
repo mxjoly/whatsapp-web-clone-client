@@ -65,7 +65,9 @@ const MessageView = ({ className, messages }: MessageViewProps) => {
                       : 'messageView__message--left',
                   ].join(' ')}
                   message={message}
-                  side={message.senderId === myId ? 'right' : 'left'}
+                  side={
+                    message.senderId === myId ? 'right-bottom' : 'left-bottom'
+                  }
                 />
               </div>
             );

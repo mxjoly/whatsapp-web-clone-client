@@ -14,6 +14,7 @@ type ChatViewProps = {
   messages: Message[];
   onCloseChat?: (chatId: string) => void;
   onDeleteChat?: (chatId: string) => void;
+  onDeleteMessagesOnChat?: (chatId: string) => void;
   onDisplayContactInfo?: () => void;
 };
 
@@ -23,6 +24,7 @@ const ChatView = ({
   messages,
   onCloseChat,
   onDeleteChat,
+  onDeleteMessagesOnChat,
   onDisplayContactInfo,
 }: ChatViewProps): JSX.Element => {
   const sendMessage = (messageContent: MessageContent) => {
@@ -52,6 +54,7 @@ const ChatView = ({
         onCloseChat={onCloseChat}
         onDeleteChat={onDeleteChat}
         onDisplayContactInfo={onDisplayContactInfo}
+        onDeleteMessagesOnChat={onDeleteMessagesOnChat}
       />
       <MessageView messages={messages} />
       <ChatFooter className="chatView__footer" onSendClick={sendMessage} />

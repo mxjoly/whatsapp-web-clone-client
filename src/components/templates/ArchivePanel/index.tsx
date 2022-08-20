@@ -7,7 +7,7 @@ import ChatList from '../../organisms/ChatList';
 type ArchivePanelProps = {
   className?: string;
   onBack?: () => void;
-  onSelectChat?: (chatId: string) => void;
+  onSelectChat?: (chat: Chat) => void;
   onDeleteChat?: (chatId: string) => void;
   onUnarchiveChat?: (chatId: string) => void;
   isOpen: boolean;

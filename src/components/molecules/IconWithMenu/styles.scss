@@ -26,7 +26,6 @@
     justify-content: space-evenly;
     position: absolute;
     list-style: none;
-
     width: max-content;
     height: min-content;
     z-index: 20;
@@ -36,19 +35,34 @@
     box-shadow: 1px 1px 11px 1px rgba(0, 0, 0, 0.34);
     transform: scale(1);
     -webkit-transform: scale(1);
-
     transition: 0.2s ease transform;
 
-    &--right {
+    &--rightBottom {
+      top: 3rem;
       left: 0;
       -webkit-transform-origin: 0% 0%;
       transform-origin: 0% 0%;
     }
 
-    &--left {
+    &--leftBottom {
+      top: 3rem;
       right: 0;
       -webkit-transform-origin: 100% 0%;
       transform-origin: 100% 0%;
+    }
+
+    &--rightTop {
+      bottom: 3rem;
+      left: 0;
+      -webkit-transform-origin: 100% 0%;
+      transform-origin: 100% 0%;
+    }
+
+    &--leftTop {
+      bottom: 3rem;
+      right: 0;
+      -webkit-transform-origin: 100% 100%;
+      transform-origin: 100% 100%;
     }
 
     @include themed {

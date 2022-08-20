@@ -50,7 +50,7 @@ const ChatFooter = ({ className, onSendClick }: ChatFooterProps) => {
   const onSendMessage = (messageContent: MessageContent) => {
     if (messageContent.text !== '') {
       onSendClick(messageContent);
-      setMessageContent(messageContent);
+      setMessageContent({ ...messageContent, text: '' });
       setAreaRows(1);
     } else {
       console.log('Nothing to send. Text is empty.');

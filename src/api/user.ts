@@ -30,6 +30,36 @@ export function getUser(userId: string) {
   }
 }
 
+export function getUserContacts(userId: string) {
+  const token = localStorage.getItem('token');
+  if (token) {
+    return new Promise<User[]>((resolve, reject) => {
+      axios({
+        method: 'get',
+        url: `${axios.defaults.baseURL}/user/contacts/${userId}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((res) => {
+          if (res.status === 200) {
+            console.log(`Contacts of user ${userId} loaded`);
+            resolve(res.data.users);
+          } else {
+            throw new Error();
+          }
+        })
+        .catch(() => {
+          console.error(`Failed to load the contacts of user ${userId}`);
+          reject();
+        });
+    });
+  } else {
+    console.error(`No token found`);
+    return Promise.reject();
+  }
+}
+
 export function getAllUsers() {
   const token = localStorage.getItem('token');
   if (token) {

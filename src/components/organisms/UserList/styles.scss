@@ -1,0 +1,61 @@
+@import '../../../scss/theme';
+
+.userList {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow-y: scroll;
+
+  @include themed {
+    background-color: t('background-chat');
+  }
+
+  &::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 0.2rem;
+    @include themed {
+      background: #374045;
+    }
+  }
+
+  &__letter {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+
+    &--left {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 8rem;
+      color: $primary-color;
+      font-size: 1.5rem;
+      height: $item-height;
+    }
+
+    &--right {
+      width: 100%;
+      height: $item-height;
+      border-bottom-style: solid;
+      border-bottom-width: 0.5px;
+      box-sizing: border-box;
+      @include themed {
+        border-bottom-color: t('border-color');
+      }
+    }
+
+    @include themed {
+      background: t('background-chat');
+    }
+  }
+}

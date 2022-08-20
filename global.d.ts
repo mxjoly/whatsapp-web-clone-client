@@ -10,6 +10,7 @@ interface User {
   password: string;
   profile: Profile;
   online: boolean;
+  contacts: string[];
 }
 
 interface Chat {

@@ -1,7 +1,7 @@
 import React from 'react';
 import dayjs from 'dayjs';
 
-import ChatItem from '../ChatItem';
+import ChatItem from '../../molecules/ChatItem';
 import './styles.scss';
 
 type ChatListProps = {
@@ -9,7 +9,7 @@ type ChatListProps = {
   messages: Message[];
   chatMenuItems: string[];
   onSelectChatMenuItems: (index: number, chatId: string) => void;
-  onSelectChat?: (chatId: string) => void;
+  onSelectChat?: (chat: Chat) => void;
   chatSelected?: Chat | null;
 };
 

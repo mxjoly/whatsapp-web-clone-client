@@ -154,7 +154,7 @@ export function deleteMessagesOnChat(chatId: string) {
     return new Promise<void>((resolve, reject) => {
       axios({
         method: 'delete',
-        url: `${axios.defaults.baseURL}/deleteOnChat/${chatId}`,
+        url: `${axios.defaults.baseURL}/message/deleteOnChat/${chatId}`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },

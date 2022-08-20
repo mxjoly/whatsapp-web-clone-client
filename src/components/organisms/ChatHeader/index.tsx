@@ -1,6 +1,5 @@
 import React from 'react';
 import { getUser } from '../../../api/user';
-import { deleteMessagesOnChat } from '../../../api/message';
 
 import Avatar from '../../atoms/Avatar';
 import { MdMoreVert, MdOutlineSearch } from 'react-icons/md';
@@ -12,6 +11,7 @@ type ChatHeaderProps = {
   chat: Chat;
   onCloseChat?: (chatId: string) => void;
   onDeleteChat?: (chatId: string) => void;
+  onDeleteMessagesOnChat?: (chatId: string) => void;
   onDisplayContactInfo?: () => void;
 };
 
@@ -20,6 +20,7 @@ const ChatHeader = ({
   className,
   onCloseChat,
   onDeleteChat,
+  onDeleteMessagesOnChat,
   onDisplayContactInfo,
 }: ChatHeaderProps) => {
   const [otherParticipant, setOtherParticipant] = React.useState<User>(null);
@@ -52,7 +53,7 @@ const ChatHeader = ({
       case 4:
         return;
       case 5:
-        deleteMessagesOnChat(chat._id);
+        onDeleteMessagesOnChat(chat._id);
         return;
       case 6:
         onDeleteChat(chat._id);
@@ -68,13 +69,19 @@ const ChatHeader = ({
     <div className={['chatHeader', className].join(' ')}>
       <div className={'chatHeader__icons'}>
         <Avatar
-          avatarUrl={chat ? chat.picture : ''}
+          avatarUrl={
+            chat.participants.length > 2 // Is it a group ?
+              ? chat.picture
+              : otherParticipant.profile.picture
+          }
           iconClassName="chatHeader__icon chatHeader__icon--left"
           onClick={onDisplayContactInfo}
         />
       </div>
       <div className="chatHeader__infos">
-        <span className="chatHeader__infos__title">{chat.title}</span>
+        <span className="chatHeader__infos__title">
+          {otherParticipant.username}
+        </span>
         <span className="chatHeader__infos__subtitle">
           {otherParticipant.online ? 'En ligne' : 'Hors ligne'}
         </span>

@@ -100,6 +100,7 @@ export function createChat(props: Chat) {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        data: { ...props },
       })
         .then((res) => {
           if (res.status === 201) {

@@ -119,7 +119,11 @@ const ChatInfoPanel = ({
         <div className="chatInfoPanel__section chatInfoPanel__section--alignCenter">
           <Avatar
             iconClassName="chatInfoPanel__avatar"
-            avatarUrl={chat.picture}
+            avatarUrl={
+              chat.participants.length > 2 // Is it a group ?
+                ? chat.picture
+                : otherParticipant.profile.picture
+            }
           />
           <span className="chatInfoPanel__username">
             {otherParticipant.username}
