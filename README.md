@@ -29,6 +29,7 @@ This is a clone of the WhatsApp web application developed in [React](https://rea
 - Settings
 - Notifications (desktop, browser tab)
 - Add style animations
+- Create groups
 - Set messages as important
 - Forward messages
 - Reply to message
