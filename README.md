@@ -34,6 +34,7 @@ This is a clone of the WhatsApp web application developed in [React](https://rea
 - Reply to message
 - Can use vocal to send message
 - Search text on chat
+- Secure socket with token
 
 ## Overviews
 
