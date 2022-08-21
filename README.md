@@ -13,6 +13,28 @@ This is a clone of the WhatsApp web application developed in [React](https://rea
 - ✅ SASS
 - ✅ React Router 6
 
+## Features
+
+- Realtime chat
+- Account login and logout
+- Routes (login and main)
+- Authentication middleware to secure requests (jsonwebtoken)
+- Light and dark mode theming (automatically detected according to user's settings)
+- User information update
+- Creation of new discussions
+
+## Possible improvements
+
+- Use emoji, audio or pictures for the messages
+- Settings
+- Notifications (desktop, browser tab)
+- Add style animations
+- Set messages as important
+- Forward messages
+- Reply to message
+- Can use vocal to send message
+- Search text on chat
+
 ## Overviews
 
 ![login](./demo/login.png)
