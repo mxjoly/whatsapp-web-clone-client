@@ -1,8 +1,8 @@
 import React from 'react';
+
 import { BsEmojiSmile } from 'react-icons/bs';
 import { MdAttachFile, MdSend } from 'react-icons/md';
 import { FaMicrophone } from 'react-icons/fa';
-
 import './styles.scss';
 
 type ChatFooterProps = {

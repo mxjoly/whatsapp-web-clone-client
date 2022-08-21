@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as apiUser from '../../../api/user';
 import * as userActions from '../../../redux/user/actions';
 import { RootState } from '../../../redux/rootReducer';
+import { useSocket } from '../../../contexts/SocketContext';
 
 import { MdDataUsage, MdMoreVert, MdChat } from 'react-icons/md';
 import IconWithMenu from '../../molecules/IconWithMenu';
@@ -23,6 +24,7 @@ const LeftPanelHeader = ({
   onClickChat,
   onClickData,
 }: LeftPanelHeaderProps): JSX.Element => {
+  const socket = useSocket();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector<RootState, User>((state) => state.user.user);
@@ -37,6 +39,7 @@ const LeftPanelHeader = ({
         return;
       case 3:
         apiUser.logoutUser(user._id).then(() => {
+          socket.emit('logoutUser', user._id);
           dispatch(userActions.logoutUser());
           navigate('/login');
           localStorage.clear();

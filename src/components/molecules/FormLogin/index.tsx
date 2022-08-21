@@ -43,7 +43,7 @@ const FormLogin = (props: FormLoginProps): JSX.Element => {
       <input
         className="formLogin__input"
         name="username"
-        placeholder="Bryan | Avery | Katy | Marco | Samy | John"
+        placeholder="Bryan | Avery | Katie | Marco | Samy | John"
         value={state.username}
         onChange={handleChange}
       />

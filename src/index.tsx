@@ -7,6 +7,8 @@ import reportWebVitals from './reportWebVitals';
 import axios from 'axios';
 import store from './redux/store';
 import { Provider } from 'react-redux';
+import { SocketProvider } from './contexts/SocketContext';
+import { ThemeContextProvider } from './contexts/ThemeContext';
 
 axios.defaults.baseURL =
   process.env.NODE_ENV === 'development'
@@ -16,12 +18,15 @@ axios.defaults.baseURL =
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
 root.render(
-  <React.StrictMode>
+  <SocketProvider>
     <Provider store={store}>
-      <App />
+      <ThemeContextProvider>
+        <App />
+      </ThemeContextProvider>
     </Provider>
-  </React.StrictMode>
+  </SocketProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

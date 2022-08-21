@@ -2,8 +2,9 @@ import React from 'react';
 import dayjs from 'dayjs';
 import { useDispatch } from 'react-redux';
 import { mongoObjectId } from '../../../utils/id';
-import { createMessage } from '../../../api/message';
-import { addMessage } from '../../../redux/messages/actions';
+import { useSocket } from '../../../contexts/SocketContext';
+import * as messageApi from '../../../api/message';
+import * as messagesActions from '../../../redux/messages/actions';
 
 import ChatHeader from '../ChatHeader';
 import ChatFooter from '../ChatFooter';
@@ -25,6 +26,7 @@ const ChatView = ({
   onDeleteChat,
   onDisplayContactInfo,
 }: ChatViewProps): JSX.Element => {
+  const socket = useSocket();
   const dispatch = useDispatch();
 
   const handleSendMessage = (messageContent: MessageContent) => {
@@ -34,7 +36,7 @@ const ChatView = ({
       content: { ...messageContent },
       createdAt: dayjs().toDate(),
       senderId: localStorage.getItem('userId'),
-      read: [],
+      read: [localStorage.getItem('userId')],
       type:
         messageContent.text !== ''
           ? 'TEXT'
@@ -43,8 +45,9 @@ const ChatView = ({
           : 'AUDIO',
     };
 
-    createMessage(message).then(() => {
-      dispatch(addMessage(message));
+    messageApi.createMessage(message).then(() => {
+      socket.emit('sendMessage', message);
+      dispatch(messagesActions.addMessage(message));
     });
   };
 

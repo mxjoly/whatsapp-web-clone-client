@@ -2,6 +2,8 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import * as chatApi from '../../../api/chat';
 import * as chatsActions from '../../../redux/chats/actions';
+import { RootState } from '../../../redux/rootReducer';
+import { useSocket } from '../../../contexts/SocketContext';
 
 import { IconType } from 'react-icons';
 import {
@@ -17,7 +19,6 @@ import {
 } from 'react-icons/md';
 import Avatar from '../../atoms/Avatar';
 import './styles.scss';
-import { RootState } from '../../../redux/rootReducer';
 
 type ChatInfoPanelProps = {
   className?: string;
@@ -32,6 +33,7 @@ const ChatInfoPanel = ({
   onClose,
   onDeleteChat,
 }: ChatInfoPanelProps) => {
+  const socket = useSocket();
   const dispatch = useDispatch();
   const user = useSelector<RootState, User>((state) => state.user.user);
   const contacts = useSelector<RootState, User[]>(
@@ -55,6 +57,7 @@ const ChatInfoPanel = ({
 
   const handleDeleteChat = () => {
     chatApi.deleteChat(chat._id).then(() => {
+      socket.emit('deleteChat', chat._id);
       dispatch(chatsActions.deleteChat(chat._id));
       onDeleteChat(chat._id);
     });

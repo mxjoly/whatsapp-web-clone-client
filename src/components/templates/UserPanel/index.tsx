@@ -1,7 +1,9 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useSocket } from '../../../contexts/SocketContext';
 import { RootState } from '../../../redux/rootReducer';
-import { updateUser } from '../../../api/user';
+import * as userApi from '../../../api/user';
+import * as userActions from '../../../redux/user/actions';
 
 import { MdArrowBack, MdEdit } from 'react-icons/md';
 import Avatar from '../../atoms/Avatar';
@@ -14,6 +16,9 @@ type UserPanelProps = {
 };
 
 const UserPanel = ({ className, onBack, isOpen }: UserPanelProps) => {
+  const dispatch = useDispatch();
+  const socket = useSocket();
+
   const user = useSelector<RootState, User>((state) => state.user.user);
   const [username, setUsername] = React.useState(user.username);
   const [status, setStatus] = React.useState(user.profile.status);
@@ -23,21 +28,31 @@ const UserPanel = ({ className, onBack, isOpen }: UserPanelProps) => {
   const updateUsername = (newUsername: string) => {
     if (newUsername === user.username) return;
 
-    updateUser(user._id, {
+    const newProps: User = {
       ...user,
       username: newUsername,
+    };
+
+    userApi.updateUser(user._id, newProps).then(() => {
+      socket.emit('updateUser', newProps);
+      dispatch(userActions.updateUser(newProps));
     });
   };
 
   const updateStatus = (newStatus: string) => {
     if (newStatus === user.profile.status) return;
 
-    updateUser(user._id, {
+    const newProps: User = {
       ...user,
       profile: {
         ...user.profile,
-        status: user.profile.status,
+        status: newStatus,
       },
+    };
+
+    userApi.updateUser(user._id, newProps).then(() => {
+      socket.emit('updateUser', newProps);
+      dispatch(userActions.updateUser(newProps));
     });
   };
 

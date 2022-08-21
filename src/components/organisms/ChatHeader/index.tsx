@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useSocket } from '../../../contexts/SocketContext';
 import * as chatApi from '../../../api/chat';
 import * as messageApi from '../../../api/message';
 import * as chatsActions from '../../../redux/chats/actions';
@@ -26,6 +27,7 @@ const ChatHeader = ({
   onDeleteChat,
   onDisplayContactInfo,
 }: ChatHeaderProps) => {
+  const socket = useSocket();
   const dispatch = useDispatch();
   const user = useSelector<RootState, User>((state) => state.user.user);
   const contacts = useSelector<RootState, User[]>(
@@ -63,11 +65,13 @@ const ChatHeader = ({
         return;
       case 5:
         messageApi.deleteMessagesOnChat(chat._id).then(() => {
+          socket.emit('deleteMessagesOnChat', chat._id);
           dispatch(messagesActions.deleteMessagesOnChat(chat._id));
         });
         return;
       case 6:
         chatApi.deleteChat(chat._id).then(() => {
+          socket.emit('deleteChat', chat._id);
           dispatch(chatsActions.deleteChat(chat._id));
           onDeleteChat(chat._id);
         });

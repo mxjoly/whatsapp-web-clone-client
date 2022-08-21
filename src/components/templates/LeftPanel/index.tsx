@@ -4,6 +4,7 @@ import { RootState } from '../../../redux/rootReducer';
 import { mongoObjectId } from '../../../utils/id';
 import * as chatApi from '../../../api/chat';
 import * as chatsActions from '../../../redux/chats/actions';
+import { useSocket } from '../../../contexts/SocketContext';
 
 import UserPanel from '../UserPanel';
 import Header from '../../organisms/LeftPanelHeader';
@@ -29,6 +30,7 @@ const LeftPanel = ({
   const [ready, setReady] = React.useState(true);
   const [search, setSearch] = React.useState<string>('');
 
+  const socket = useSocket();
   const dispatch = useDispatch();
   const chats = useSelector<RootState, Chat[]>((state) => state.chats.chats);
   const user = useSelector<RootState, User>((state) => state.user.user);
@@ -76,6 +78,7 @@ const LeftPanel = ({
           picture: '',
         })
         .then((chat) => {
+          socket.emit('createChat', chat);
           onSelectChat(chat);
           setDisplayNewChatPanel(false);
         });
@@ -167,6 +170,7 @@ const LeftPanel = ({
               chatApi
                 .updateChat(chatId, { ...chat, archived: true })
                 .then(() => {
+                  socket.emit('updateChat', { ...chat, archived: true });
                   dispatch(
                     chatsActions.updateChat(chatId, { ...chat, archived: true })
                   );
@@ -176,6 +180,7 @@ const LeftPanel = ({
               return;
             case 2:
               chatApi.deleteChat(chatId).then(() => {
+                socket.emit('deleteChat', chatId);
                 dispatch(chatsActions.deleteChat(chatId));
               });
               return;

@@ -5,6 +5,7 @@ export const ActionTypes = {
   UPDATE_USER: '/user/update-user',
   CLEAR: '/user/clear',
   SAVE_CONTACTS: 'user/save-contacts',
+  UPDATE_CONTACT: 'user/update-contact',
 };
 
 export const saveUser = (user: User) => ({
@@ -28,6 +29,14 @@ export const updateUser = (newProps: User) => ({
 export const saveContacts = (users: User[]) => ({
   type: ActionTypes.SAVE_CONTACTS,
   payload: users,
+});
+
+export const updateContact = (contactId: string, newProps: User) => ({
+  type: ActionTypes.UPDATE_CONTACT,
+  payload: {
+    contactId,
+    props: { ...newProps },
+  },
 });
 
 export const clear = () => ({

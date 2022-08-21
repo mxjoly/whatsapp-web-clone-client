@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as chatApi from '../../../api/chat';
 import * as chatsAction from '../../../redux/chats/actions';
 import { RootState } from '../../../redux/rootReducer';
+import { useSocket } from '../../../contexts/SocketContext';
 
 import { MdArrowBack } from 'react-icons/md';
 import './styles.scss';
@@ -23,6 +24,7 @@ const ArchivePanel = ({
   onSelectChat,
   chatSelected,
 }: ArchivePanelProps) => {
+  const socket = useSocket();
   const dispatch = useDispatch();
   const chats = useSelector<RootState, Chat[]>((state) =>
     state.chats.chats.filter((chat) => chat.archived)
@@ -48,6 +50,7 @@ const ArchivePanel = ({
       switch (index) {
         case 0:
           chatApi.updateChat(chatId, { ...chat, archived: false }).then(() => {
+            socket.emit('updateChat', { chat: { ...chat, archived: false } });
             dispatch(
               chatsAction.updateChat(chatId, { ...chat, archived: false })
             );
@@ -55,6 +58,7 @@ const ArchivePanel = ({
           return;
         case 1:
           chatApi.deleteChat(chatId).then(() => {
+            socket.emit('deleteChat', chatId);
             dispatch(chatsAction.deleteChat(chatId));
           });
           return;

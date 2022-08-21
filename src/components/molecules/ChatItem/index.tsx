@@ -1,6 +1,7 @@
 import React from 'react';
 import { getDateLabel } from '../../../utils/date';
 import { useSelector, useDispatch } from 'react-redux';
+import { useSocket } from '../../../contexts/SocketContext';
 import { RootState } from '../../../redux/rootReducer';
 import * as messageApi from '../../../api/message';
 import * as messagesAction from '../../../redux/messages/actions';
@@ -36,6 +37,7 @@ const ChatItem = ({
   const ref = React.useRef<HTMLDivElement>();
   const [hover, setHover] = React.useState(false);
 
+  const socket = useSocket();
   const dispatch = useDispatch();
   const user = useSelector<RootState, User>((state) => state.user.user);
   const contacts = useSelector<RootState, User[]>(
@@ -87,19 +89,14 @@ const ChatItem = ({
         if (isRead && isOthers) {
           break;
         } else {
-          messageApi
-            .updateMessage(messages[i]._id, {
-              ...messages[i],
-              read: [...messages[i].read, user._id],
-            })
-            .then(() => {
-              dispatch(
-                messagesAction.updateMessage(messages[i]._id, {
-                  ...messages[i],
-                  read: [...messages[i].read, user._id],
-                })
-              );
-            });
+          const newProps: Message = {
+            ...messages[i],
+            read: [...messages[i].read, user._id],
+          };
+          messageApi.updateMessage(messages[i]._id, newProps).then(() => {
+            socket.emit('updateMessage', newProps);
+            dispatch(messagesAction.updateMessage(messages[i]._id, newProps));
+          });
         }
       }
     }

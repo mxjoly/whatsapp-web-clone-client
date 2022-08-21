@@ -1,11 +1,11 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { RootState } from '../../../redux/rootReducer';
 
 import { MdArrowBack } from 'react-icons/md';
 import SearchBarPanel from '../../organisms/SearchBarPanel';
 import UserList from '../../organisms/UserList';
 import './styles.scss';
-import { RootState } from '../../../redux/rootReducer';
 
 type NewChatPanelProps = {
   className?: string;

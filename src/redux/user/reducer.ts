@@ -44,6 +44,23 @@ const reducer = (state: UserState = initialState, action: Action): UserState =>
         return;
       }
 
+      case ActionTypes.UPDATE_CONTACT: {
+        draft.contacts = draft.contacts.map((contact) => {
+          if (contact._id === action.payload.contactId) {
+            console.log({
+              ...contact,
+              ...action.payload.props,
+            });
+            return {
+              ...contact,
+              ...action.payload.props,
+            };
+          }
+          return contact;
+        });
+        return;
+      }
+
       case ActionTypes.CLEAR: {
         draft = initialState;
         return;

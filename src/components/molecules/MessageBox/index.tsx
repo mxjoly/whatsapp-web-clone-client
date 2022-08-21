@@ -1,6 +1,7 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import { useDispatch } from 'react-redux';
+import { useSocket } from '../../../contexts/SocketContext';
 import * as messageApi from '../../../api/message';
 import * as messagesActions from '../../../redux/messages/actions';
 
@@ -24,6 +25,7 @@ const MessageBox = ({
   mine,
   read,
 }: MessageBoxProps) => {
+  const socket = useSocket();
   const dispatch = useDispatch();
   const [hover, setHover] = React.useState(false);
 
@@ -39,6 +41,7 @@ const MessageBox = ({
         return;
       case 4:
         messageApi.deleteMessage(message._id).then(() => {
+          socket.emit('deleteMessage', message._id);
           dispatch(messagesActions.deleteMessage(message._id));
         });
         return;

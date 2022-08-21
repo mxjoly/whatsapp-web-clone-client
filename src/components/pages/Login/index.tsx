@@ -2,6 +2,7 @@ import React from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../../../api/user';
+import { useSocket } from '../../../contexts/SocketContext';
 
 import { ThreeDots } from 'react-loader-spinner';
 import { ThemeContext } from '../../../contexts/ThemeContext';
@@ -13,6 +14,7 @@ type LoginProps = {};
 const Login = (props: LoginProps): JSX.Element => {
   const [loading, setLoading] = React.useState(true);
   const navigate = useNavigate();
+  const socket = useSocket();
 
   React.useEffect(() => {
     if (localStorage.getItem('userId') && localStorage.getItem('token')) {
@@ -29,6 +31,7 @@ const Login = (props: LoginProps): JSX.Element => {
     setLoading(true);
     loginUser(state.username, state.password, state.phone)
       .then(({ token, userId }) => {
+        socket.emit('user', userId);
         setLoading(false);
         navigate('/home');
         console.log({ token, userId });
