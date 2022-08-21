@@ -17,9 +17,9 @@ This is a clone of the WhatsApp web application developed in [React](https://rea
 
 ![login](./demo/login.png)
 ![default](./demo/default.png)
-![default](./demo/chat.png)
-![default](./demo/userInfo.png)
-![default](./demo/chatInfo.png)
+![chat](./demo/chat.png)
+![user-info](./demo/user-info.png)
+![chat-info](./demo/chat-info.png)
 
 ## Demo
 
