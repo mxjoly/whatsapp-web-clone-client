@@ -231,7 +231,7 @@ const Main = (props: MainProps): JSX.Element => {
     }
   }, [socket]);
 
-  //
+  // Logout the user when close the tab
   React.useEffect(() => {
     function disconnect(event) {
       const userId = localStorage.getItem('userId');
