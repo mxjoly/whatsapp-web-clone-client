@@ -263,10 +263,8 @@ const Main = (props: MainProps): JSX.Element => {
   };
 
   const handleCloseChat = (chatId: string) => {
-    if (chatSelected._id === chatId && chatVisible) {
-      setChatSelected(null);
-      setChatVisible(false);
-    }
+    setChatSelected(null);
+    setChatVisible(false);
   };
 
   const handleMouseOver = () => {
