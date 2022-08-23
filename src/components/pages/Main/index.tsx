@@ -263,8 +263,10 @@ const Main = (props: MainProps): JSX.Element => {
   };
 
   const handleCloseChat = (chatId: string) => {
-    setChatSelected(null);
-    setChatVisible(false);
+    if (chatSelected._id === chatId && chatVisible) {
+      setChatSelected(null);
+      setChatVisible(false);
+    }
   };
 
   const handleMouseOver = () => {
@@ -336,7 +338,6 @@ const Main = (props: MainProps): JSX.Element => {
         displayChat={chatVisible}
         chatSelected={chatSelected}
         onCloseChat={handleCloseChat}
-        onDeleteChat={handleCloseChat}
       />
     </div>
   );

@@ -16,7 +16,6 @@ type ChatHeaderProps = {
   className?: string;
   chat: Chat;
   onCloseChat?: (chatId: string) => void;
-  onDeleteChat?: (chatId: string) => void;
   onDisplayContactInfo?: () => void;
 };
 
@@ -24,7 +23,6 @@ const ChatHeader = ({
   chat,
   className,
   onCloseChat,
-  onDeleteChat,
   onDisplayContactInfo,
 }: ChatHeaderProps) => {
   const socket = useSocket();
@@ -73,7 +71,7 @@ const ChatHeader = ({
         chatApi.deleteChat(chat._id).then(() => {
           socket.emit('deleteChat', chat._id);
           dispatch(chatsActions.deleteChat(chat._id));
-          onDeleteChat(chat._id);
+          onCloseChat(chat._id);
         });
         return;
     }

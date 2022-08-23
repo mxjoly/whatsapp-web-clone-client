@@ -23,7 +23,6 @@ const ChatView = ({
   className,
   chat,
   onCloseChat,
-  onDeleteChat,
   onDisplayContactInfo,
 }: ChatViewProps): JSX.Element => {
   const socket = useSocket();
@@ -57,7 +56,6 @@ const ChatView = ({
         className="chatView__header"
         chat={chat}
         onCloseChat={onCloseChat}
-        onDeleteChat={onDeleteChat}
         onDisplayContactInfo={onDisplayContactInfo}
       />
       <MessageView chat={chat} />

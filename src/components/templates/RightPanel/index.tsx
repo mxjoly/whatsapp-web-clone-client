@@ -13,7 +13,6 @@ type RightPanelProps = {
   displayChat?: boolean;
   chatSelected?: Chat;
   onCloseChat?: (chatId: string) => void;
-  onDeleteChat?: (chatId: string) => void;
 };
 
 const RightPanel = ({
@@ -21,7 +20,6 @@ const RightPanel = ({
   displayChat,
   chatSelected,
   onCloseChat,
-  onDeleteChat,
 }: RightPanelProps): JSX.Element => {
   const [ready, setReady] = React.useState(false);
   const [displayContactInfo, setDisplayContactInfo] = React.useState(false);
@@ -35,6 +33,11 @@ const RightPanel = ({
       ? 'Linux'
       : 'Unknown';
 
+  const handleClose = (chatId: string) => {
+    setDisplayContactInfo(false);
+    onCloseChat(chatId);
+  };
+
   return (
     <div className={['rightPanel', className].join(' ')}>
       {displayChat && chatSelected ? (
@@ -47,8 +50,8 @@ const RightPanel = ({
               .filter(Boolean)
               .join(' ')}
             chat={chatSelected}
-            onCloseChat={onCloseChat}
-            onDeleteChat={onDeleteChat}
+            onCloseChat={handleClose}
+            onDeleteChat={handleClose}
             onDisplayContactInfo={() => setDisplayContactInfo(true)}
           />
           <ChatInfoPanel
@@ -60,7 +63,7 @@ const RightPanel = ({
               .join(' ')}
             chat={displayContactInfo ? chatSelected : null}
             onClose={() => setDisplayContactInfo(false)}
-            onDeleteChat={onDeleteChat}
+            onDeleteChat={handleClose}
           />
         </>
       ) : (
